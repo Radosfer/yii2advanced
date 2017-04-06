@@ -9,7 +9,7 @@ use Yii;
  *
  * @property integer $id
  * @property string $created_at
- * @property integer $value
+ * @property double $value
  */
 class Price extends \yii\db\ActiveRecord
 {
@@ -29,7 +29,7 @@ class Price extends \yii\db\ActiveRecord
         return [
             [['created_at', 'value'], 'required'],
             [['created_at'], 'safe'],
-            [['value'], 'integer'],
+            [['value'], 'number'],
         ];
     }
 
@@ -48,8 +48,8 @@ class Price extends \yii\db\ActiveRecord
     public static function getCurrentPrice()
     {
         return Price::find()
-            ->select('value')
+            ->select('id, value')
             ->orderBy('id DESC')
-            ->scalar();
+            ->one();
     }
 }

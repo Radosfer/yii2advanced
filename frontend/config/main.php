@@ -48,7 +48,10 @@ return [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'house'],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'man'],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'man_house'],
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'price']
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'price'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'counter'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'indication'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'pay']
             ],
         ],
     ],
