@@ -1,6 +1,8 @@
 <?php
 namespace frontend\controllers;
 
+use app\models\Indication;
+use app\models\Pay;
 use app\models\Street;
 use app\models\Group;
 use app\models\House;
@@ -9,6 +11,7 @@ use app\models\Price;
 //use Codeception\Lib\Generator\Group;
 use Yii;
 use yii\base\InvalidParamException;
+use yii\helpers\VarDumper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -18,6 +21,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+
 //use frontend\models\Streets; // 123
 
 /**
@@ -72,6 +76,29 @@ class SiteController extends Controller
         ];
     }
 
+    public function beforeAction($action)
+    {
+        // ...set `$this->enableCsrfValidation` here based on some conditions...
+        // call parent method that will check CSRF if such property is true.
+        if ($action->id === 'indication') {
+            # code...
+            $this->enableCsrfValidation = false;
+
+            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+                Yii::$app->end();
+            }
+        }
+        if ($action->id === 'pay') {
+            # code...
+            $this->enableCsrfValidation = false;
+
+            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+                Yii::$app->end();
+            }
+        }
+        return parent::beforeAction($action);
+    }
+
     public function actionStreets()
     {
 
@@ -99,8 +126,8 @@ class SiteController extends Controller
 //];
 
 
-
     }
+
     public function actionMans()
     {
         //
@@ -111,6 +138,61 @@ class SiteController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return Price::getCurrentPrice();
     }
+
+    public function actionIndication()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $counterId = Yii::$app->request->post('counter_id');
+        $value_new = Yii::$app->request->post('value');
+        $created_at = Yii::$app->request->post('created_at');
+        $houseId = Yii::$app->request->post('houseId');
+
+        $indication = new Indication();
+        $indication->value = $value_new;
+        $indication->counter_id = $counterId;
+        $indication->created_at = $created_at;
+        $indication->save();
+//        if (!$indication->save()){
+//            return ['success' => false, 'errors' => $indication->errors];
+//        }
+//        return ['success' => true, 'data' => $houseId];
+
+        $house = House::findOne($houseId);
+        $value = $house->testimony;
+        $value = $value_new - $value;
+        $house->testimony = $value;
+        $house->save();
+
+    }
+
+    public function actionPay()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $house_id = Yii::$app->request->post('house_id');
+        $created_at = Yii::$app->request->post('created_at');
+        $price_id = Yii::$app->request->post('price_id');
+        $amount = Yii::$app->request->post('amount');
+
+        $pay = new Pay();
+        $pay->house_id = $house_id;
+        $pay->created_at = $created_at;
+        $pay->price_id = $price_id;
+        $pay->amount = $amount;
+        $pay->save();
+
+        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+//        return ['success' => true, 'data' => $house_id];
+        $money = $amount / $price_value;
+
+        $house = House::findOne($house_id);
+        $testimony = $house->testimony;
+        $new_testimony = $testimony - $money;
+        $house->testimony = $new_testimony;
+        $house->save();
+
+    }
+
+
 
     public function actionGroups()
     {
