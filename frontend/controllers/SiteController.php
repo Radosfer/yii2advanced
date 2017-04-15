@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 
+use app\models\Counter;
 use app\models\Indication;
 use app\models\Pay;
 use app\models\Street;
@@ -142,10 +143,17 @@ class SiteController extends Controller
     public function actionIndication()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $counterId = Yii::$app->request->post('counter_id');
+//        $counterId = Yii::$app->request->post('counter_id');
         $value_new = Yii::$app->request->post('value');
         $created_at = Yii::$app->request->post('created_at');
         $houseId = Yii::$app->request->post('houseId');
+
+        $counterId = Counter::find()->select('id')->where(['house_id' => $houseId])->scalar();
+        $previous_indication = Indication::find()->select('value')->where(['counter_id' => $counterId])->orderBy('id DESC')->scalar();
+
+        if($previous_indication > $value_new){
+            return ['success' => false, 'errors' => "The new value is smaller than the previous"];
+        }
 
         $indication = new Indication();
         $indication->value = $value_new;
@@ -156,12 +164,30 @@ class SiteController extends Controller
 //            return ['success' => false, 'errors' => $indication->errors];
 //        }
 //        return ['success' => true, 'data' => $houseId];
+        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->scalar();
+//        $counter_id = Counter::find()->select('id')->where(['house_id' => $houseId])->scalar();
+
 
         $house = House::findOne($houseId);
-        $value = $house->testimony;
-        $value = $value_new - $value;
-        $house->testimony = $value;
+        $money = $house->money;
+//        $value_old = $house->testimony;
+        $start_or_not = $house->start_value;
+        if ($start_or_not == 0) {
+            $money = $money - (($value_new - $previous_indication - $start_indication) * $price_value);
+            $start_or_not = 1;
+        } else {
+            $money = $money - (($value_new - $previous_indication) * $price_value);
+        }
+
+//        $value = $money / $price_value;
+        $house->money = $money;
+        $house->start_value = $start_or_not;
+        $house->testimony = $money / $price_value;
+        $house->last_indication = $value_new;
         $house->save();
+//        return ['house' => $house->attributes, 'previous_indication' => $previous_indication];
+        return $house->attributes;
 
     }
 
@@ -181,17 +207,20 @@ class SiteController extends Controller
         $pay->save();
 
         $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+
+
+//        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->scalar();
 //        return ['success' => true, 'data' => $house_id];
-        $money = $amount / $price_value;
 
         $house = House::findOne($house_id);
-        $testimony = $house->testimony;
-        $new_testimony = $testimony - $money;
+        $money_value = $house->money;
+        $money_value = $money_value + $amount;
+        $new_testimony = $money_value / $price_value;
         $house->testimony = $new_testimony;
+        $house->money = $money_value;
         $house->save();
-
+        return $house->attributes;
     }
-
 
 
     public function actionGroups()
