@@ -9,6 +9,7 @@ use app\models\Group;
 use app\models\House;
 use app\models\Man;
 use app\models\Price;
+use app\models\Testimony;
 //use Codeception\Lib\Generator\Group;
 use Yii;
 use yii\base\InvalidParamException;
@@ -97,6 +98,14 @@ class SiteController extends Controller
                 Yii::$app->end();
             }
         }
+        if ($action->id === 'testimony') {
+            # code...
+            $this->enableCsrfValidation = false;
+
+            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+                Yii::$app->end();
+            }
+        }
         return parent::beforeAction($action);
     }
 
@@ -140,6 +149,21 @@ class SiteController extends Controller
         return Price::getCurrentPrice();
     }
 
+    public function actionTestimony()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $group_id = Yii::$app->request->post('group_id');
+        return Testimony::find()
+            ->where(['group_id' => $group_id])
+            ->orderBy('id DESC')
+            ->one();
+
+//        return Testimony::getCurrentTestimony();
+
+//        return ['data' => $data];
+    }
+
     public function actionIndication()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -151,7 +175,7 @@ class SiteController extends Controller
         $counterId = Counter::find()->select('id')->where(['house_id' => $houseId])->scalar();
         $previous_indication = Indication::find()->select('value')->where(['counter_id' => $counterId])->orderBy('id DESC')->scalar();
 
-        if($previous_indication > $value_new){
+        if ($previous_indication > $value_new) {
             return ['success' => false, 'errors' => "The new value is smaller than the previous"];
         }
 
@@ -187,7 +211,9 @@ class SiteController extends Controller
         $house->last_indication = $value_new;
         $house->save();
 //        return ['house' => $house->attributes, 'previous_indication' => $previous_indication];
-        return $house->attributes;
+        $house = $house->attributes;
+        $house['created_at'] = $created_at;
+        return $house;
 
     }
 
