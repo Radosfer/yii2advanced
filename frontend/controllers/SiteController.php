@@ -10,7 +10,9 @@ use app\models\House;
 use app\models\Man;
 use app\models\Price;
 use app\models\Testimony;
+use app\models\HouseHistory;
 //use Codeception\Lib\Generator\Group;
+use Symfony\Component\BrowserKit\History;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\helpers\VarDumper;
@@ -106,6 +108,14 @@ class SiteController extends Controller
                 Yii::$app->end();
             }
         }
+        if ($action->id === 'history') {
+            # code...
+            $this->enableCsrfValidation = false;
+
+            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+                Yii::$app->end();
+            }
+        }
         return parent::beforeAction($action);
     }
 
@@ -160,8 +170,17 @@ class SiteController extends Controller
             ->one();
 
 //        return Testimony::getCurrentTestimony();
-
 //        return ['data' => $data];
+    }
+    public function actionHistory()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $house_id = Yii::$app->request->post('house_id');
+        return HouseHistory::find()
+            ->where(['house_id' => $house_id])
+            ->orderBy('id DESC')
+            ->all();
     }
 
     public function actionIndication()
@@ -213,6 +232,16 @@ class SiteController extends Controller
 //        return ['house' => $house->attributes, 'previous_indication' => $previous_indication];
         $house = $house->attributes;
         $house['created_at'] = $created_at;
+
+        $history = new HouseHistory();
+        $history->house_id = $houseId;
+        $history->date = $created_at;
+        $history->pay = 0;
+        $history->testimony = $value_new;
+        $history->tariff = $price_value;
+        $history->money = $money;
+        $history->save();
+
         return $house;
 
     }
@@ -245,6 +274,18 @@ class SiteController extends Controller
         $house->testimony = $new_testimony;
         $house->money = $money_value;
         $house->save();
+
+        $history = new HouseHistory();
+        $history->house_id = $house_id;
+        $history->date = $created_at;
+        $history->pay = $amount;
+        $history->testimony = 0;
+        $history->tariff = $price_value;
+        $history->money = $money_value;
+        $history->save();
+
+
+
         return $house->attributes;
     }
 
