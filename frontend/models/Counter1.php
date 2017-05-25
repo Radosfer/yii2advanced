@@ -5,21 +5,21 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "group_testimony".
+ * This is the model class for table "counter".
  *
  * @property integer $id
- * @property integer $group_id
+ * @property integer $house_id
  * @property string $created_at
  * @property integer $value
  */
-class Testimony extends \yii\db\ActiveRecord
+class Counter extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'group_testimony';
+        return 'counter';
     }
 
     /**
@@ -28,8 +28,8 @@ class Testimony extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['group_id', 'created_at', 'value'], 'required'],
-            [['group_id', 'value'], 'integer'],
+            [['house_id', 'created_at', 'value'], 'required'],
+            [['house_id', 'value'], 'integer'],
             [['created_at'], 'string', 'max' => 255],
         ];
     }
@@ -41,18 +41,9 @@ class Testimony extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'group_id' => 'Group ID',
+            'house_id' => 'House ID',
             'created_at' => 'Created At',
             'value' => 'Value',
         ];
     }
-
-    public static function getCurrentTestimony()
-    {
-        return Testimony::find()
-            ->select('id, value')
-            ->orderBy('id DESC')
-            ->one();
-    }
-
 }

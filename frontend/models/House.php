@@ -16,6 +16,8 @@ use Yii;
  * @property double $money
  * @property integer $testimony
  * @property integer $start_value
+ * @property integer $last_indication
+ * @property integer $spent
  */
 class House extends \yii\db\ActiveRecord
 {
@@ -33,8 +35,8 @@ class House extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['street_id', 'group_id', 'title', 'fio', 'phone', 'money', 'testimony', 'start_value'], 'required'],
-            [['street_id', 'group_id', 'testimony', 'start_value'], 'integer'],
+            [['street_id', 'group_id', 'title', 'fio', 'phone', 'money', 'testimony', 'start_value', 'last_indication', 'spent'], 'required'],
+            [['street_id', 'group_id', 'testimony', 'start_value', 'last_indication', 'spent'], 'integer'],
             [['money'], 'number'],
             [['title', 'fio', 'phone'], 'string', 'max' => 255],
         ];
@@ -55,6 +57,8 @@ class House extends \yii\db\ActiveRecord
             'money' => 'Money',
             'testimony' => 'Testimony',
             'start_value' => 'Start Value',
+            'last_indication' => 'Last Indication',
+            'spent' => 'Spent',
         ];
     }
 }

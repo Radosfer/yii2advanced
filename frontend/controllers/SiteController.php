@@ -2,6 +2,7 @@
 namespace frontend\controllers;
 
 use app\models\Counter;
+use app\models\GroupCounter;
 use app\models\Indication;
 use app\models\Pay;
 use app\models\Street;
@@ -9,7 +10,7 @@ use app\models\Group;
 use app\models\House;
 use app\models\Man;
 use app\models\Price;
-use app\models\Testimony;
+use app\models\GroupTestimony;
 use app\models\HouseHistory;
 //use Codeception\Lib\Generator\Group;
 use Symfony\Component\BrowserKit\History;
@@ -116,6 +117,30 @@ class SiteController extends Controller
                 Yii::$app->end();
             }
         }
+        if ($action->id === 'counter') {
+            # code...
+            $this->enableCsrfValidation = false;
+
+            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+                Yii::$app->end();
+            }
+        }
+        if ($action->id === 'group') {
+            # code...
+            $this->enableCsrfValidation = false;
+
+            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+                Yii::$app->end();
+            }
+        }
+        if ($action->id === 'group_testimony') {
+            # code...
+            $this->enableCsrfValidation = false;
+
+            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+                Yii::$app->end();
+            }
+        }
         return parent::beforeAction($action);
     }
 
@@ -159,6 +184,28 @@ class SiteController extends Controller
         return Price::getCurrentPrice();
     }
 
+    public function actionCounter()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $houseId = Yii::$app->request->post('house_id');
+        $created_at = Yii::$app->request->post('created_at');
+        $value = Yii::$app->request->post('value');
+
+        $house = House::findOne($houseId);
+        $house->start_value = 0;
+        $house->last_indication = $value;
+        $house->save();
+
+        $counter = new Counter();
+        $counter->house_id = $houseId;
+        $counter->created_at = $created_at;
+        $counter->value = $value;
+        $counter->finish_value = 0;
+        $counter->save();
+
+        return $house;
+    }
+
     public function actionTestimony()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -183,6 +230,49 @@ class SiteController extends Controller
             ->all();
     }
 
+    public function actionGroup()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $value = Yii::$app->request->post('value');
+        $groupId = Yii::$app->request->post('group_id');
+        $created_at = Yii::$app->request->post('created_at');
+
+        $groupcounter = new GroupCounter();
+        $groupcounter->value = $value;
+        $groupcounter->group_id = $groupId;
+        $groupcounter->created_at = $created_at;
+        $groupcounter->save();
+
+    }
+
+    public function actionGroup_testimony()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $value = Yii::$app->request->post('value');
+        $groupId = Yii::$app->request->post('group_id');
+        $created_at = Yii::$app->request->post('created_at');
+
+        $groupCounterId = GroupCounter::find()->select('id')->where(['group_id' => $groupId])->orderBy('id DESC')->scalar();
+
+
+        $testimony = new GroupTestimony();
+        $testimony->value = $value;
+        $testimony->group_counter_id = $groupCounterId;
+        $testimony->created_at = $created_at;
+        $testimony->save();
+
+        $group = Group::findOne($groupId);
+        $group->spent = $value;
+        $group->save();
+
+        return $group;
+
+    }
+
+
+
     public function actionIndication()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -191,7 +281,7 @@ class SiteController extends Controller
         $created_at = Yii::$app->request->post('created_at');
         $houseId = Yii::$app->request->post('houseId');
 
-        $counterId = Counter::find()->select('id')->where(['house_id' => $houseId])->scalar();
+        $counterId = Counter::find()->select('id')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
         $previous_indication = Indication::find()->select('value')->where(['counter_id' => $counterId])->orderBy('id DESC')->scalar();
 
         if ($previous_indication > $value_new) {
@@ -203,33 +293,33 @@ class SiteController extends Controller
         $indication->counter_id = $counterId;
         $indication->created_at = $created_at;
         $indication->save();
-//        if (!$indication->save()){
-//            return ['success' => false, 'errors' => $indication->errors];
-//        }
-//        return ['success' => true, 'data' => $houseId];
+
         $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
-        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->scalar();
-//        $counter_id = Counter::find()->select('id')->where(['house_id' => $houseId])->scalar();
+        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
+//        $finish_indication = Counter::find()->select('finish_value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
 
 
         $house = House::findOne($houseId);
         $money = $house->money;
-//        $value_old = $house->testimony;
+        $spent = $house->spent;
+        $last_indication = $house->last_indication;
         $start_or_not = $house->start_value;
+
         if ($start_or_not == 0) {
             $money = $money - (($value_new - $previous_indication - $start_indication) * $price_value);
             $start_or_not = 1;
         } else {
             $money = $money - (($value_new - $previous_indication) * $price_value);
+//            return ['$value_new' => $value_new, '$previous_indication' => $previous_indication, '$start_indication' => $start_indication];
         }
 
-//        $value = $money / $price_value;
         $house->money = $money;
         $house->start_value = $start_or_not;
         $house->testimony = $money / $price_value;
         $house->last_indication = $value_new;
+//        $house->spent = $value_new - $start_indication + $spent;
+        $house->spent = $value_new - $last_indication + $spent;
         $house->save();
-//        return ['house' => $house->attributes, 'previous_indication' => $previous_indication];
         $house = $house->attributes;
         $house['created_at'] = $created_at;
 

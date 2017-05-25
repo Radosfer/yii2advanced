@@ -5,22 +5,21 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "counter".
+ * This is the model class for table "group_counter".
  *
  * @property integer $id
- * @property integer $house_id
+ * @property integer $group_id
  * @property string $created_at
  * @property integer $value
- * @property integer $finish_value
  */
-class Counter extends \yii\db\ActiveRecord
+class GroupCounter extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'counter';
+        return 'group_counter';
     }
 
     /**
@@ -29,8 +28,8 @@ class Counter extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['house_id', 'created_at', 'value', 'finish_value'], 'required'],
-            [['house_id', 'value', 'finish_value'], 'integer'],
+            [['group_id', 'created_at', 'value'], 'required'],
+            [['group_id', 'value'], 'integer'],
             [['created_at'], 'string', 'max' => 255],
         ];
     }
@@ -42,10 +41,9 @@ class Counter extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'house_id' => 'House ID',
+            'group_id' => 'Group ID',
             'created_at' => 'Created At',
             'value' => 'Value',
-            'finish_value' => 'Finish Value',
         ];
     }
 }

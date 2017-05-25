@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $id
  * @property string $title
+ * @property integer $spent
  */
 class Group extends \yii\db\ActiveRecord
 {
@@ -26,7 +27,8 @@ class Group extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title'], 'required'],
+            [['title', 'spent'], 'required'],
+            [['spent'], 'integer'],
             [['title'], 'string', 'max' => 255],
         ];
     }
@@ -39,6 +41,7 @@ class Group extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
+            'spent' => 'Spent',
         ];
     }
 }
