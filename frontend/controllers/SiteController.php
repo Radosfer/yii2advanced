@@ -211,8 +211,8 @@ class SiteController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $group_id = Yii::$app->request->post('group_id');
-        return Testimony::find()
-            ->where(['group_id' => $group_id])
+        return Group::find()
+            ->where(['id' => $group_id])
             ->orderBy('id DESC')
             ->one();
 
@@ -230,7 +230,7 @@ class SiteController extends Controller
             ->all();
     }
 
-    public function actionGroup()
+    public function actionGroup() //addGroupCounter
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
@@ -244,6 +244,20 @@ class SiteController extends Controller
         $groupcounter->created_at = $created_at;
         $groupcounter->save();
 
+        $lastGroupCounterId = GroupCounter::find()->select('id')->where(['group_id' => $groupId])->orderBy('id DESC')->scalar();
+
+        $testimony = new GroupTestimony();
+        $testimony->value = $value;
+        $testimony->group_counter_id = $lastGroupCounterId;
+        $testimony->created_at = $created_at;
+        $testimony->save();
+
+        $group = Group::findOne($groupId);
+        $group->last_indication = $value;
+
+        return $group;
+
+
     }
 
     public function actionGroup_testimony()
@@ -255,6 +269,7 @@ class SiteController extends Controller
         $created_at = Yii::$app->request->post('created_at');
 
         $groupCounterId = GroupCounter::find()->select('id')->where(['group_id' => $groupId])->orderBy('id DESC')->scalar();
+        $previousValue = GroupTestimony::find()->select('value')->where(['group_counter_id' => $groupCounterId])->orderBy('id DESC')->scalar();
 
 
         $testimony = new GroupTestimony();
@@ -263,8 +278,12 @@ class SiteController extends Controller
         $testimony->created_at = $created_at;
         $testimony->save();
 
+
+
         $group = Group::findOne($groupId);
-        $group->spent = $value;
+        $spent = $group->spent;
+        $group->spent = $spent + ($value - $previousValue);
+        $group->last_indication = $value;
         $group->save();
 
         return $group;
