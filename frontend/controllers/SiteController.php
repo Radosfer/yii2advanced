@@ -254,6 +254,7 @@ class SiteController extends Controller
 
         $group = Group::findOne($groupId);
         $group->last_indication = $value;
+        $group->save();
 
         return $group;
 
@@ -300,6 +301,12 @@ class SiteController extends Controller
         $created_at = Yii::$app->request->post('created_at');
         $houseId = Yii::$app->request->post('houseId');
 
+        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+        if(!$price_value){
+            return ['error' => 'Отсутствует значение тарифа'];
+        }
+
+
         $counterId = Counter::find()->select('id')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
         $previous_indication = Indication::find()->select('value')->where(['counter_id' => $counterId])->orderBy('id DESC')->scalar();
 
@@ -313,7 +320,7 @@ class SiteController extends Controller
         $indication->created_at = $created_at;
         $indication->save();
 
-        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+//        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
         $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
 //        $finish_indication = Counter::find()->select('finish_value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
 
