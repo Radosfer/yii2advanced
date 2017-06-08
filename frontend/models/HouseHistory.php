@@ -14,6 +14,7 @@ use Yii;
  * @property integer $testimony
  * @property integer $tariff
  * @property integer $money
+ * @property integer $start_indication
  */
 class HouseHistory extends \yii\db\ActiveRecord
 {
@@ -31,8 +32,8 @@ class HouseHistory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['house_id', 'date', 'pay', 'testimony', 'tariff', 'money'], 'required'],
-            [['house_id', 'pay', 'testimony', 'tariff', 'money'], 'integer'],
+            [['house_id', 'date', 'pay', 'testimony', 'tariff', 'money', 'start_indication'], 'required'],
+            [['house_id', 'pay', 'testimony', 'tariff', 'money', 'start_indication'], 'integer'],
             [['date'], 'string', 'max' => 255],
         ];
     }
@@ -50,6 +51,7 @@ class HouseHistory extends \yii\db\ActiveRecord
             'testimony' => 'Testimony',
             'tariff' => 'Tariff',
             'money' => 'Money',
+            'start_indication' => 'Start Indication',
         ];
     }
 }

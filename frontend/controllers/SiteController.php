@@ -181,7 +181,8 @@ class SiteController extends Controller
     public function actionPrice()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        return Price::getCurrentPrice();
+        $price = Price::getCurrentPrice();
+        return $price ? $price : ['error' => 'Установите стоимость киловата'];
     }
 
     public function actionCounter()
@@ -191,7 +192,7 @@ class SiteController extends Controller
         $created_at = Yii::$app->request->post('created_at');
         $value = Yii::$app->request->post('value');
 
-        $house = House::findOne($houseId);
+        $house = House::findOne($houseId);//todo проверка наличия записи
         $house->start_value = 0;
         $house->last_indication = $value;
         $house->save();
@@ -211,20 +212,18 @@ class SiteController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $group_id = Yii::$app->request->post('group_id');
-        return Group::find()
+        return Group::find()//todo проверка наличия записи
             ->where(['id' => $group_id])
             ->orderBy('id DESC')
             ->one();
 
-//        return Testimony::getCurrentTestimony();
-//        return ['data' => $data];
     }
     public function actionHistory()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $house_id = Yii::$app->request->post('house_id');
-        return HouseHistory::find()
+        return HouseHistory::find()//todo проверка наличия записи
             ->where(['house_id' => $house_id])
             ->orderBy('id DESC')
             ->all();
@@ -252,7 +251,7 @@ class SiteController extends Controller
         $testimony->created_at = $created_at;
         $testimony->save();
 
-        $group = Group::findOne($groupId);
+        $group = Group::findOne($groupId);//todo проверка наличия записи
         $group->last_indication = $value;
         $group->save();
 
@@ -270,8 +269,15 @@ class SiteController extends Controller
         $created_at = Yii::$app->request->post('created_at');
 
         $groupCounterId = GroupCounter::find()->select('id')->where(['group_id' => $groupId])->orderBy('id DESC')->scalar();
+        if($groupCounterId == null){
+            return ['error' => 'Отсутствует счетчик для данной группы! Введите стартовые показания нового счетчика, затем вводите текущие показания!'];
+//            return ['error' => $groupCounterId];
+        }
         $previousValue = GroupTestimony::find()->select('value')->where(['group_counter_id' => $groupCounterId])->orderBy('id DESC')->scalar();
-
+//        if(!$previousValue && $previousValue != 0){
+        if($previousValue == null){
+            return ['error' => 'Отсутствуют предыдущие показания счетчика!'];
+        }
 
         $testimony = new GroupTestimony();
         $testimony->value = $value;
@@ -281,7 +287,11 @@ class SiteController extends Controller
 
 
 
-        $group = Group::findOne($groupId);
+        $group = Group::findOne($groupId);//todo проверка наличия записи
+//        $group = Group::findOne(0);//todo проверка наличия записи
+        if($group == null){
+            return ['error' => 'Невозможно получить запись Group::findOne('.$groupId.')!'];
+        }
         $spent = $group->spent;
         $group->spent = $spent + ($value - $previousValue);
         $group->last_indication = $value;
@@ -303,16 +313,27 @@ class SiteController extends Controller
 
         $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
         if(!$price_value){
-            return ['error' => 'Отсутствует значение тарифа'];
+            return ['error' => 'Установите стоимость киловата'];
         }
 
 
         $counterId = Counter::find()->select('id')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
+            if($counterId == null){
+                return ['error' => 'Невозможно получить $counterId из Counter!'];
+            }
         $previous_indication = Indication::find()->select('value')->where(['counter_id' => $counterId])->orderBy('id DESC')->scalar();
+            if($previous_indication == null){
+                return ['error' => 'Невозможно получить $previous_indication из Indication!'];
+            }
 
         if ($previous_indication > $value_new) {
-            return ['success' => false, 'errors' => "The new value is smaller than the previous"];
+            return ['error' => 'Новые показание меньше предыдущих!'];
         }
+
+        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
+            if($start_indication == null){
+                return ['error' => 'Невозможно получить $start_indication из Counter!'];
+            }
 
         $indication = new Indication();
         $indication->value = $value_new;
@@ -320,12 +341,10 @@ class SiteController extends Controller
         $indication->created_at = $created_at;
         $indication->save();
 
-//        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
-        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
-//        $finish_indication = Counter::find()->select('finish_value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
+//        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
 
 
-        $house = House::findOne($houseId);
+        $house = House::findOne($houseId);//todo
         $money = $house->money;
         $spent = $house->spent;
         $last_indication = $house->last_indication;
@@ -336,7 +355,6 @@ class SiteController extends Controller
             $start_or_not = 1;
         } else {
             $money = $money - (($value_new - $previous_indication) * $price_value);
-//            return ['$value_new' => $value_new, '$previous_indication' => $previous_indication, '$start_indication' => $start_indication];
         }
 
         $house->money = $money;
@@ -356,6 +374,7 @@ class SiteController extends Controller
         $history->testimony = $value_new;
         $history->tariff = $price_value;
         $history->money = $money;
+        $history->start_indication = $start_indication;
         $history->save();
 
         return $house;
@@ -370,6 +389,15 @@ class SiteController extends Controller
         $price_id = Yii::$app->request->post('price_id');
         $amount = Yii::$app->request->post('amount');
 
+        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+            if($price_value == null){
+                return ['error' => 'Невозможно получить $price_value из Price!'];
+            }
+
+        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->orderBy('id DESC')->scalar();
+            if($start_indication == null){
+                return ['error' => 'Невозможно получить $start_indication из Counter!'];
+            }
         $pay = new Pay();
         $pay->house_id = $house_id;
         $pay->created_at = $created_at;
@@ -377,13 +405,11 @@ class SiteController extends Controller
         $pay->amount = $amount;
         $pay->save();
 
-        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+//        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
+//
+//        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->orderBy('id DESC')->scalar();
 
-
-//        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->scalar();
-//        return ['success' => true, 'data' => $house_id];
-
-        $house = House::findOne($house_id);
+        $house = House::findOne($house_id);//todo
         $money_value = $house->money;
         $money_value = $money_value + $amount;
         $new_testimony = $money_value / $price_value;
@@ -398,9 +424,8 @@ class SiteController extends Controller
         $history->testimony = 0;
         $history->tariff = $price_value;
         $history->money = $money_value;
+        $history->start_indication = $start_indication;
         $history->save();
-
-
 
         return $house->attributes;
     }
