@@ -12,6 +12,7 @@ use Yii;
  * @property string $created_at
  * @property integer $value
  * @property integer $finish_value
+ * @property integer $garden_id
  */
 class Counter extends \yii\db\ActiveRecord
 {
@@ -32,6 +33,7 @@ class Counter extends \yii\db\ActiveRecord
             [['house_id', 'created_at', 'value', 'finish_value'], 'required'],
             [['house_id', 'value', 'finish_value'], 'integer'],
             [['created_at'], 'string', 'max' => 255],
+            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];
     }
 
@@ -46,6 +48,7 @@ class Counter extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'value' => 'Value',
             'finish_value' => 'Finish Value',
+            'garden_id' => 'Garden ID',
         ];
     }
 }

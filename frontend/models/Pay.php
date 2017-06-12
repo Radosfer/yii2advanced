@@ -12,6 +12,7 @@ use Yii;
  * @property string $created_at
  * @property integer $price_id
  * @property integer $amount
+ * @property integer $garden_id
  */
 class Pay extends \yii\db\ActiveRecord
 {
@@ -32,6 +33,7 @@ class Pay extends \yii\db\ActiveRecord
             [['house_id', 'created_at', 'price_id', 'amount'], 'required'],
             [['house_id', 'price_id', 'amount'], 'integer'],
             [['created_at'], 'string', 'max' => 255],
+            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];
     }
 
@@ -46,6 +48,7 @@ class Pay extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'price_id' => 'Price ID',
             'amount' => 'Amount',
+            'garden_id' => 'Garden ID',
         ];
     }
 }

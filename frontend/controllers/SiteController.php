@@ -2,6 +2,7 @@
 namespace frontend\controllers;
 
 use app\models\Counter;
+use app\models\Garden;
 use app\models\GroupCounter;
 use app\models\Indication;
 use app\models\Pay;
@@ -85,7 +86,9 @@ class SiteController extends Controller
     {
         // ...set `$this->enableCsrfValidation` here based on some conditions...
         // call parent method that will check CSRF if such property is true.
-        if ($action->id === 'indication') {
+
+        $actions = ['indication', 'pay', 'testimony', 'history', 'counter', 'group', 'group_testimony'];
+        if (in_array($action->id, $actions)) {
             # code...
             $this->enableCsrfValidation = false;
 
@@ -93,84 +96,82 @@ class SiteController extends Controller
                 Yii::$app->end();
             }
         }
-        if ($action->id === 'pay') {
-            # code...
-            $this->enableCsrfValidation = false;
 
-            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-                Yii::$app->end();
-            }
-        }
-        if ($action->id === 'testimony') {
-            # code...
-            $this->enableCsrfValidation = false;
-
-            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-                Yii::$app->end();
-            }
-        }
-        if ($action->id === 'history') {
-            # code...
-            $this->enableCsrfValidation = false;
-
-            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-                Yii::$app->end();
-            }
-        }
-        if ($action->id === 'counter') {
-            # code...
-            $this->enableCsrfValidation = false;
-
-            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-                Yii::$app->end();
-            }
-        }
-        if ($action->id === 'group') {
-            # code...
-            $this->enableCsrfValidation = false;
-
-            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-                Yii::$app->end();
-            }
-        }
-        if ($action->id === 'group_testimony') {
-            # code...
-            $this->enableCsrfValidation = false;
-
-            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-                Yii::$app->end();
-            }
-        }
+//        if ($action->id === 'indication') {
+//            # code...
+//            $this->enableCsrfValidation = false;
+//
+//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+//                Yii::$app->end();
+//            }
+//        }
+//        if ($action->id === 'pay') {
+//            # code...
+//            $this->enableCsrfValidation = false;
+//
+//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+//                Yii::$app->end();
+//            }
+//        }
+//        if ($action->id === 'testimony') {
+//            # code...
+//            $this->enableCsrfValidation = false;
+//
+//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+//                Yii::$app->end();
+//            }
+//        }
+//        if ($action->id === 'history') {
+//            # code...
+//            $this->enableCsrfValidation = false;
+//
+//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+//                Yii::$app->end();
+//            }
+//        }
+//        if ($action->id === 'counter') {
+//            # code...
+//            $this->enableCsrfValidation = false;
+//
+//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+//                Yii::$app->end();
+//            }
+//        }
+//        if ($action->id === 'group') {
+//            # code...
+//            $this->enableCsrfValidation = false;
+//
+//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+//                Yii::$app->end();
+//            }
+//        }
+//        if ($action->id === 'group_testimony') {
+//            # code...
+//            $this->enableCsrfValidation = false;
+//
+//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
+//                Yii::$app->end();
+//            }
+//        }
         return parent::beforeAction($action);
     }
 
-    public function actionStreets()
+    public function actionGet_street()
     {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return Street::find()//todo проверка наличия записи
+        ->where(['garden_id' => Garden::getCurrentId()])
+            ->orderBy('title ASC')
+            ->all();
+    }
 
-//         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-//        return Street::find()->asArray()->all();
-
-//        return [
-//  [
-//    "id"=> 1,
-//    "title"=> "1st Avenue"
-//  ],
-//  [
-//    "id"=> 2,
-//    "title"=> "2st Avenue"
-//  ],
-//  [
-//    "id"=> 3,
-//    "title"=> "3st Avenue"
-//  ],
-//  [
-//    "id"=> 4,
-//    "title"=> "4st Avenue"
-//  ]
-//];
-
-
+    public function actionGet_group()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return Group::find()//todo проверка наличия записи
+        ->where(['garden_id' => Garden::getCurrentId()])
+            ->orderBy('title ASC')
+            ->all();
     }
 
     public function actionMans()
@@ -192,7 +193,10 @@ class SiteController extends Controller
         $created_at = Yii::$app->request->post('created_at');
         $value = Yii::$app->request->post('value');
 
-        $house = House::findOne($houseId);//todo проверка наличия записи
+        $house = House::findOne([
+            'id' => $houseId,
+            'garden_id' => Garden::getCurrentId(),
+        ]);//todo проверка наличия записи
         $house->start_value = 0;
         $house->last_indication = $value;
         $house->save();
@@ -201,6 +205,7 @@ class SiteController extends Controller
         $counter->house_id = $houseId;
         $counter->created_at = $created_at;
         $counter->value = $value;
+        $counter->garden_id = Garden::getCurrentId();
         $counter->finish_value = 0;
         $counter->save();
 
@@ -213,18 +218,25 @@ class SiteController extends Controller
 
         $group_id = Yii::$app->request->post('group_id');
         return Group::find()//todo проверка наличия записи
-            ->where(['id' => $group_id])
+            ->where([
+                'id' => $group_id,
+                'garden_id' => Garden::getCurrentId()
+                ])
             ->orderBy('id DESC')
             ->one();
 
     }
+
     public function actionHistory()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $house_id = Yii::$app->request->post('house_id');
         return HouseHistory::find()//todo проверка наличия записи
-            ->where(['house_id' => $house_id])
+        ->where([
+            'house_id' => $house_id,
+            'garden_id' => Garden::getCurrentId(),
+            ])
             ->orderBy('id DESC')
             ->all();
     }
@@ -241,17 +253,29 @@ class SiteController extends Controller
         $groupcounter->value = $value;
         $groupcounter->group_id = $groupId;
         $groupcounter->created_at = $created_at;
+        $groupcounter->garden_id = Garden::getCurrentId();
         $groupcounter->save();
 
-        $lastGroupCounterId = GroupCounter::find()->select('id')->where(['group_id' => $groupId])->orderBy('id DESC')->scalar();
+        $lastGroupCounterId = GroupCounter::find()
+                                            ->select('id')
+                                            ->where([
+                                                'group_id' => $groupId,
+                                                'garden_id' => Garden::getCurrentId()
+                                                 ])
+                                            ->orderBy('id DESC')
+                                            ->scalar();
 
         $testimony = new GroupTestimony();
         $testimony->value = $value;
         $testimony->group_counter_id = $lastGroupCounterId;
         $testimony->created_at = $created_at;
+        $testimony->garden_id = Garden::getCurrentId();
         $testimony->save();
 
-        $group = Group::findOne($groupId);//todo проверка наличия записи
+        $group = Group::findOne([
+            'id' => $groupId,
+            'garden_id' => Garden::getCurrentId()
+        ]);//todo проверка наличия записи
         $group->last_indication = $value;
         $group->save();
 
@@ -268,14 +292,28 @@ class SiteController extends Controller
         $groupId = Yii::$app->request->post('group_id');
         $created_at = Yii::$app->request->post('created_at');
 
-        $groupCounterId = GroupCounter::find()->select('id')->where(['group_id' => $groupId])->orderBy('id DESC')->scalar();
-        if($groupCounterId == null){
+        $groupCounterId = GroupCounter::find()
+            ->select('id')
+            ->where([
+                'group_id' => $groupId,
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+        if ($groupCounterId == null) {
             return ['error' => 'Отсутствует счетчик для данной группы! Введите стартовые показания нового счетчика, затем вводите текущие показания!'];
 //            return ['error' => $groupCounterId];
         }
-        $previousValue = GroupTestimony::find()->select('value')->where(['group_counter_id' => $groupCounterId])->orderBy('id DESC')->scalar();
+        $previousValue = GroupTestimony::find()
+            ->select('value')
+            ->where([
+                'group_counter_id' => $groupCounterId,
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
 //        if(!$previousValue && $previousValue != 0){
-        if($previousValue == null){
+        if ($previousValue == null) {
             return ['error' => 'Отсутствуют предыдущие показания счетчика!'];
         }
 
@@ -283,14 +321,17 @@ class SiteController extends Controller
         $testimony->value = $value;
         $testimony->group_counter_id = $groupCounterId;
         $testimony->created_at = $created_at;
+        $testimony->garden_id = Garden::getCurrentId();
         $testimony->save();
 
 
-
-        $group = Group::findOne($groupId);//todo проверка наличия записи
+        $group = Group::findOne([
+            'id' => $groupId,
+            'garden_id' => Garden::getCurrentId()
+        ]);//todo проверка наличия записи
 //        $group = Group::findOne(0);//todo проверка наличия записи
-        if($group == null){
-            return ['error' => 'Невозможно получить запись Group::findOne('.$groupId.')!'];
+        if ($group == null) {
+            return ['error' => 'Невозможно получить запись Group::findOne(' . $groupId . ')!'];
         }
         $spent = $group->spent;
         $group->spent = $spent + ($value - $previousValue);
@@ -302,7 +343,6 @@ class SiteController extends Controller
     }
 
 
-
     public function actionIndication()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -311,40 +351,72 @@ class SiteController extends Controller
         $created_at = Yii::$app->request->post('created_at');
         $houseId = Yii::$app->request->post('houseId');
 
-        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
-        if(!$price_value){
+        $price_value = Price::find()
+            ->select('value')
+            ->where([
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+        if (!$price_value) {
             return ['error' => 'Установите стоимость киловата'];
         }
 
 
-        $counterId = Counter::find()->select('id')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
-            if($counterId == null){
-                return ['error' => 'Невозможно получить $counterId из Counter!'];
-            }
-        $previous_indication = Indication::find()->select('value')->where(['counter_id' => $counterId])->orderBy('id DESC')->scalar();
-            if($previous_indication == null){
-                return ['error' => 'Невозможно получить $previous_indication из Indication!'];
-            }
+        $counterId = Counter::find()
+            ->select('id')
+            ->where([
+                'house_id' => $houseId,
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+        if ($counterId == null) {
+            return ['error' => 'Невозможно получить $counterId из Counter!'];
+        }
+        $previous_indication = Indication::find()
+            ->select('value')
+            ->where([
+                'counter_id' => $counterId,
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+
+//            if($previous_indication == null){
+//                return ['error' => 'Невозможно получить $previous_indication из Indication!'];
+//            }
 
         if ($previous_indication > $value_new) {
             return ['error' => 'Новые показание меньше предыдущих!'];
         }
 
-        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
-            if($start_indication == null){
-                return ['error' => 'Невозможно получить $start_indication из Counter!'];
-            }
+        $start_indication = Counter::find()
+            ->select('value')
+            ->where([
+                'house_id' => $houseId,
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+        if ($start_indication == null) {
+            return ['error' => 'Невозможно получить $start_indication из Counter!'];
+        }
 
         $indication = new Indication();
         $indication->value = $value_new;
         $indication->counter_id = $counterId;
         $indication->created_at = $created_at;
+        $indication->garden_id = Garden::getCurrentId();
         $indication->save();
 
 //        $start_indication = Counter::find()->select('value')->where(['house_id' => $houseId])->orderBy('id DESC')->scalar();
 
 
-        $house = House::findOne($houseId);//todo
+        $house = House::findOne([
+            'id' => $houseId,
+            'garden_id' => Garden::getCurrentId()
+        ]);//todo
         $money = $house->money;
         $spent = $house->spent;
         $last_indication = $house->last_indication;
@@ -375,6 +447,7 @@ class SiteController extends Controller
         $history->tariff = $price_value;
         $history->money = $money;
         $history->start_indication = $start_indication;
+        $history->garden_id = Garden::getCurrentId();
         $history->save();
 
         return $house;
@@ -389,27 +462,44 @@ class SiteController extends Controller
         $price_id = Yii::$app->request->post('price_id');
         $amount = Yii::$app->request->post('amount');
 
-        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
-            if($price_value == null){
-                return ['error' => 'Невозможно получить $price_value из Price!'];
-            }
+        $price_value = Price::find()
+            ->select('value')
+            ->where([
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+        if ($price_value == null) {
+            return ['error' => 'Невозможно получить $price_value из Price!'];
+        }
 
-        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->orderBy('id DESC')->scalar();
-            if($start_indication == null){
-                return ['error' => 'Невозможно получить $start_indication из Counter!'];
-            }
+        $start_indication = Counter::find()
+            ->select('value')
+            ->where([
+                'house_id' => $house_id,
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+        if ($start_indication == null) {
+            return ['error' => 'Невозможно получить $start_indication из Counter!'];
+        }
         $pay = new Pay();
         $pay->house_id = $house_id;
         $pay->created_at = $created_at;
         $pay->price_id = $price_id;
         $pay->amount = $amount;
+        $pay->garden_id = Garden::getCurrentId();
         $pay->save();
 
 //        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
 //
 //        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->orderBy('id DESC')->scalar();
 
-        $house = House::findOne($house_id);//todo
+        $house = House::findOne([
+            'id' => $house_id,
+            'garden_id' => Garden::getCurrentId()
+        ]);//todo
         $money_value = $house->money;
         $money_value = $money_value + $amount;
         $new_testimony = $money_value / $price_value;
@@ -425,6 +515,7 @@ class SiteController extends Controller
         $history->tariff = $price_value;
         $history->money = $money_value;
         $history->start_indication = $start_indication;
+        $history->garden_id = Garden::getCurrentId();
         $history->save();
 
         return $house->attributes;
@@ -457,56 +548,14 @@ class SiteController extends Controller
 //        ];
     }
 
-    public function actionHouses()
+    public function actionHouse()
     {
-//        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-//        return House::find()->asArray()->all();
-
-//        return [
-//            [
-//                "id"=>  1,
-//                "street_id"=>  1,
-//                "group_id"=>  1,
-//                "title"=>  1
-//            ],
-//            [
-//                "id"=>  2,
-//                "street_id"=>  2,
-//                "group_id"=>  1,
-//                "title"=>  2
-//            ],
-//            [
-//                "id"=>  3,
-//                "street_id"=>  3,
-//                "group_id"=>  1,
-//                "title"=>  3
-//            ],
-//            [
-//                "id"=>  4,
-//                "street_id"=>  2,
-//                "group_id"=>  3,
-//                "title"=>  4
-//            ],
-//            [
-//                "id"=>  5,
-//                "street_id"=>  4,
-//                "group_id"=>  3,
-//                "title"=>  5
-//            ],
-//            [
-//                "id"=>  6,
-//                "street_id"=>  3,
-//                "group_id"=>  3,
-//                "title"=>  6
-//            ],
-//            [
-//                "id"=>  7,
-//                "street_id"=>  4,
-//                "group_id"=>  1,
-//                "title"=>  7
-//            ]
-//        ];
+        return House::find()//todo проверка наличия записи
+            ->where(['garden_id' => Garden::getCurrentId()])
+            ->orderBy('id DESC')
+            ->all();
     }
 
     /**

@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property string $created_at
  * @property double $value
+ * @property integer $garden_id
  */
 class Price extends \yii\db\ActiveRecord
 {
@@ -30,6 +31,7 @@ class Price extends \yii\db\ActiveRecord
             [['created_at', 'value'], 'required'],
             [['created_at'], 'safe'],
             [['value'], 'number'],
+            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];
     }
 
@@ -42,6 +44,7 @@ class Price extends \yii\db\ActiveRecord
             'id' => 'ID',
             'created_at' => 'Created At',
             'value' => 'Value',
+            'garden_id' => 'Garden ID',
         ];
     }
 
@@ -49,6 +52,9 @@ class Price extends \yii\db\ActiveRecord
     {
         return Price::find()
             ->select('id, value')
+            ->where([
+                'garden_id' => Garden::getCurrentId(),
+            ])
             ->orderBy('id DESC')
             ->one();
     }

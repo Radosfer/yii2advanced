@@ -18,6 +18,7 @@ use Yii;
  * @property integer $start_value
  * @property integer $last_indication
  * @property integer $spent
+ * @property integer $garden_id
  */
 class House extends \yii\db\ActiveRecord
 {
@@ -39,6 +40,7 @@ class House extends \yii\db\ActiveRecord
             [['street_id', 'group_id', 'testimony', 'start_value', 'last_indication', 'spent'], 'integer'],
             [['money'], 'number'],
             [['title', 'fio', 'phone'], 'string', 'max' => 255],
+            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];
     }
 
@@ -59,6 +61,7 @@ class House extends \yii\db\ActiveRecord
             'start_value' => 'Start Value',
             'last_indication' => 'Last Indication',
             'spent' => 'Spent',
+            'garden_id' => 'Garden ID',
         ];
     }
 }

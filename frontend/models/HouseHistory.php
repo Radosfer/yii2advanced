@@ -15,6 +15,7 @@ use Yii;
  * @property integer $tariff
  * @property integer $money
  * @property integer $start_indication
+ * @property integer $garden_id
  */
 class HouseHistory extends \yii\db\ActiveRecord
 {
@@ -35,6 +36,7 @@ class HouseHistory extends \yii\db\ActiveRecord
             [['house_id', 'date', 'pay', 'testimony', 'tariff', 'money', 'start_indication'], 'required'],
             [['house_id', 'pay', 'testimony', 'tariff', 'money', 'start_indication'], 'integer'],
             [['date'], 'string', 'max' => 255],
+            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];
     }
 
@@ -52,6 +54,7 @@ class HouseHistory extends \yii\db\ActiveRecord
             'tariff' => 'Tariff',
             'money' => 'Money',
             'start_indication' => 'Start Indication',
+            'garden_id' => 'Garden ID',
         ];
     }
 }

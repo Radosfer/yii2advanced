@@ -11,6 +11,7 @@ use Yii;
  * @property integer $group_id
  * @property string $created_at
  * @property integer $value
+ * @property integer $garden_id
  */
 class GroupCounter extends \yii\db\ActiveRecord
 {
@@ -31,6 +32,7 @@ class GroupCounter extends \yii\db\ActiveRecord
             [['group_id', 'created_at', 'value'], 'required'],
             [['group_id', 'value'], 'integer'],
             [['created_at'], 'string', 'max' => 255],
+            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];
     }
 
@@ -44,6 +46,7 @@ class GroupCounter extends \yii\db\ActiveRecord
             'group_id' => 'Group ID',
             'created_at' => 'Created At',
             'value' => 'Value',
+            'garden_id' => 'Garden ID',
         ];
     }
 }

@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $id
  * @property string $title
+ * @property integer $garden_id
  * @property integer $spent
  * @property integer $last_indication
  */
@@ -29,6 +30,7 @@ class Group extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'spent', 'last_indication'], 'required'],
+            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
             [['spent', 'last_indication'], 'integer'],
             [['title'], 'string', 'max' => 255],
         ];
@@ -44,6 +46,7 @@ class Group extends \yii\db\ActiveRecord
             'title' => 'Title',
             'spent' => 'Spent',
             'last_indication' => 'Last Indication',
+            'garden_id' => 'Garden ID',
         ];
     }
 }

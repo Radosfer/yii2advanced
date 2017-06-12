@@ -5,20 +5,19 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "streets".
+ * This is the model class for table "garden".
  *
  * @property integer $id
- * @property integer $garden_id
- * @property string $title
+ * @property string $name
  */
-class Street extends \yii\db\ActiveRecord
+class Garden extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'streets';
+        return 'garden';
     }
 
     /**
@@ -27,9 +26,8 @@ class Street extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title'], 'required'],
-            [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
-            [['title'], 'string', 'max' => 255],
+            [['name'], 'required'],
+            [['name'], 'string', 'max' => 255],
         ];
     }
 
@@ -40,8 +38,12 @@ class Street extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'title' => 'Avenue',
-            'garden_id' => 'Garden ID',
+            'name' => 'Name',
         ];
+    }
+
+    public static function getCurrentId()
+    {
+        return 5;
     }
 }
