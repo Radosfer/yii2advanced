@@ -44,6 +44,6 @@ class Garden extends \yii\db\ActiveRecord
 
     public static function getCurrentId()
     {
-        return 5;
+        return 1;
     }
 }

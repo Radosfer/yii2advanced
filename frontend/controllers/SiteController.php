@@ -9,7 +9,6 @@ use app\models\Pay;
 use app\models\Street;
 use app\models\Group;
 use app\models\House;
-use app\models\Man;
 use app\models\Price;
 use app\models\GroupTestimony;
 use app\models\HouseHistory;
@@ -87,7 +86,7 @@ class SiteController extends Controller
         // ...set `$this->enableCsrfValidation` here based on some conditions...
         // call parent method that will check CSRF if such property is true.
 
-        $actions = ['indication', 'pay', 'testimony', 'history', 'counter', 'group', 'group_testimony'];
+        $actions = ['indication', 'pay', 'testimony', 'history', 'counter', 'group', 'group_testimony', 'add_price'];
         if (in_array($action->id, $actions)) {
             # code...
             $this->enableCsrfValidation = false;
@@ -96,63 +95,6 @@ class SiteController extends Controller
                 Yii::$app->end();
             }
         }
-
-//        if ($action->id === 'indication') {
-//            # code...
-//            $this->enableCsrfValidation = false;
-//
-//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-//                Yii::$app->end();
-//            }
-//        }
-//        if ($action->id === 'pay') {
-//            # code...
-//            $this->enableCsrfValidation = false;
-//
-//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-//                Yii::$app->end();
-//            }
-//        }
-//        if ($action->id === 'testimony') {
-//            # code...
-//            $this->enableCsrfValidation = false;
-//
-//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-//                Yii::$app->end();
-//            }
-//        }
-//        if ($action->id === 'history') {
-//            # code...
-//            $this->enableCsrfValidation = false;
-//
-//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-//                Yii::$app->end();
-//            }
-//        }
-//        if ($action->id === 'counter') {
-//            # code...
-//            $this->enableCsrfValidation = false;
-//
-//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-//                Yii::$app->end();
-//            }
-//        }
-//        if ($action->id === 'group') {
-//            # code...
-//            $this->enableCsrfValidation = false;
-//
-//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-//                Yii::$app->end();
-//            }
-//        }
-//        if ($action->id === 'group_testimony') {
-//            # code...
-//            $this->enableCsrfValidation = false;
-//
-//            if (Yii::$app->getRequest()->getMethod() == 'OPTIONS') {
-//                Yii::$app->end();
-//            }
-//        }
         return parent::beforeAction($action);
     }
 
@@ -174,10 +116,6 @@ class SiteController extends Controller
             ->all();
     }
 
-    public function actionMans()
-    {
-        //
-    }
 
     public function actionPrice()
     {
@@ -186,12 +124,46 @@ class SiteController extends Controller
         return $price ? $price : ['error' => 'Установите стоимость киловата'];
     }
 
+    public function actionAdd_price()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $created_at = Yii::$app->request->post('created_at');
+        $value = Yii::$app->request->post('value');
+
+        $price = new Price();
+        $price->created_at = $created_at;
+        $price->value = $value;
+        $price->garden_id = Garden::getCurrentId();
+        $price->save();
+
+        $gardenId = Garden::getCurrentId();
+        $houses = House::find()->where(['garden_id' => $gardenId])->all();
+        foreach ($houses as $house) {
+            $money = $house->money;
+            $testimony = $house->testimony;
+            if ($money > 0) {
+                $new_testimony = $money / $value;
+                $house->testimony = $new_testimony;
+            } else {
+                $new_money = $testimony * $value;
+                $house->money = $new_money;
+            }
+//            $house->update(false); // skipping validation as no user input is involved
+            $house->save(); // skipping validation as no user input is involved
+        }
+        return $price;
+
+    }
+
+
     public function actionCounter()
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $houseId = Yii::$app->request->post('house_id');
         $created_at = Yii::$app->request->post('created_at');
         $value = Yii::$app->request->post('value');
+
+
 
         $house = House::findOne([
             'id' => $houseId,
@@ -256,14 +228,13 @@ class SiteController extends Controller
         $groupcounter->garden_id = Garden::getCurrentId();
         $groupcounter->save();
 
-        $lastGroupCounterId = GroupCounter::find()
-                                            ->select('id')
-                                            ->where([
-                                                'group_id' => $groupId,
-                                                'garden_id' => Garden::getCurrentId()
-                                                 ])
-                                            ->orderBy('id DESC')
-                                            ->scalar();
+        $lastGroupCounterId = GroupCounter::find()->select('id')
+                                                  ->where([
+                                                        'group_id' => $groupId,
+                                                        'garden_id' => Garden::getCurrentId()
+                                                         ])
+                                                  ->orderBy('id DESC')
+                                                  ->scalar();
 
         $testimony = new GroupTestimony();
         $testimony->value = $value;
@@ -459,7 +430,7 @@ class SiteController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $house_id = Yii::$app->request->post('house_id');
         $created_at = Yii::$app->request->post('created_at');
-        $price_id = Yii::$app->request->post('price_id');
+//        $price_id = Yii::$app->request->post('price_id');
         $amount = Yii::$app->request->post('amount');
 
         $price_value = Price::find()
@@ -472,6 +443,17 @@ class SiteController extends Controller
         if ($price_value == null) {
             return ['error' => 'Невозможно получить $price_value из Price!'];
         }
+
+        $price_id = Price::find()
+            ->select('id')
+            ->where([
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
+
+
+//        return [$price_value , $price_id];
 
         $start_indication = Counter::find()
             ->select('value')
@@ -496,13 +478,32 @@ class SiteController extends Controller
 //
 //        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->orderBy('id DESC')->scalar();
 
+//        $house = House::findOne([
+//            'id' => $house_id,
+//            'garden_id' => Garden::getCurrentId()
+//        ]);//todo
+//        $money_value = $house->money;
+//        $money_value = $money_value + $amount;
+//        $new_testimony = $money_value / $price_value;
+//        $house->testimony = $new_testimony;
+//        $house->money = $money_value;
+//        $house->save();
+
         $house = House::findOne([
             'id' => $house_id,
             'garden_id' => Garden::getCurrentId()
         ]);//todo
         $money_value = $house->money;
+        $testimony = $house->testimony;
+        if ($money_value < 0) {
+            $new_testimony = $amount / $price_value + $testimony;
+            $money_value = $new_testimony * $price_value;
+        } else {
+
         $money_value = $money_value + $amount;
         $new_testimony = $money_value / $price_value;
+        }
+
         $house->testimony = $new_testimony;
         $house->money = $money_value;
         $house->save();
