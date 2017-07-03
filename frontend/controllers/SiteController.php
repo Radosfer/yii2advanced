@@ -102,7 +102,7 @@ class SiteController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return Street::find()//todo проверка наличия записи
-        ->where(['garden_id' => Garden::getCurrentId()])
+            ->where(['garden_id' => Garden::getCurrentId()])
             ->orderBy('title ASC')
             ->all();
     }
@@ -111,7 +111,7 @@ class SiteController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         return Group::find()//todo проверка наличия записи
-        ->where(['garden_id' => Garden::getCurrentId()])
+            ->where(['garden_id' => Garden::getCurrentId()])
             ->orderBy('title ASC')
             ->all();
     }
@@ -164,7 +164,6 @@ class SiteController extends Controller
         $value = Yii::$app->request->post('value');
 
 
-
         $house = House::findOne([
             'id' => $houseId,
             'garden_id' => Garden::getCurrentId(),
@@ -190,10 +189,10 @@ class SiteController extends Controller
 
         $group_id = Yii::$app->request->post('group_id');
         return Group::find()//todo проверка наличия записи
-            ->where([
-                'id' => $group_id,
-                'garden_id' => Garden::getCurrentId()
-                ])
+        ->where([
+            'id' => $group_id,
+            'garden_id' => Garden::getCurrentId()
+        ])
             ->orderBy('id DESC')
             ->one();
 
@@ -208,7 +207,7 @@ class SiteController extends Controller
         ->where([
             'house_id' => $house_id,
             'garden_id' => Garden::getCurrentId(),
-            ])
+        ])
             ->orderBy('id DESC')
             ->all();
     }
@@ -229,12 +228,12 @@ class SiteController extends Controller
         $groupcounter->save();
 
         $lastGroupCounterId = GroupCounter::find()->select('id')
-                                                  ->where([
-                                                        'group_id' => $groupId,
-                                                        'garden_id' => Garden::getCurrentId()
-                                                         ])
-                                                  ->orderBy('id DESC')
-                                                  ->scalar();
+            ->where([
+                'group_id' => $groupId,
+                'garden_id' => Garden::getCurrentId()
+            ])
+            ->orderBy('id DESC')
+            ->scalar();
 
         $testimony = new GroupTestimony();
         $testimony->value = $value;
@@ -474,21 +473,6 @@ class SiteController extends Controller
         $pay->garden_id = Garden::getCurrentId();
         $pay->save();
 
-//        $price_value = Price::find()->select('value')->orderBy('id DESC')->scalar();
-//
-//        $start_indication = Counter::find()->select('value')->where(['house_id' => $house_id])->orderBy('id DESC')->scalar();
-
-//        $house = House::findOne([
-//            'id' => $house_id,
-//            'garden_id' => Garden::getCurrentId()
-//        ]);//todo
-//        $money_value = $house->money;
-//        $money_value = $money_value + $amount;
-//        $new_testimony = $money_value / $price_value;
-//        $house->testimony = $new_testimony;
-//        $house->money = $money_value;
-//        $house->save();
-
         $house = House::findOne([
             'id' => $house_id,
             'garden_id' => Garden::getCurrentId()
@@ -500,8 +484,8 @@ class SiteController extends Controller
             $money_value = $new_testimony * $price_value;
         } else {
 
-        $money_value = $money_value + $amount;
-        $new_testimony = $money_value / $price_value;
+            $money_value = $money_value + $amount;
+            $new_testimony = $money_value / $price_value;
         }
 
         $house->testimony = $new_testimony;
@@ -525,28 +509,7 @@ class SiteController extends Controller
 
     public function actionGroups()
     {
-        //\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        //return Group::find()->asArray()->all();
-
-//        return [
-//            [
-//                "id"=> 1,
-//                "title"=> "1st Groups"
-//            ],
-//            [
-//                "id"=> 2,
-//                "title"=> "2st Groups"
-//            ],
-//            [
-//                "id"=> 3,
-//                "title"=> "3st Groups"
-//            ],
-//            [
-//                "id"=> 4,
-//                "title"=> "4st Groups"
-//            ]
-//        ];
     }
 
     public function actionHouse()
@@ -555,7 +518,7 @@ class SiteController extends Controller
 
         return House::find()//todo проверка наличия записи
             ->where(['garden_id' => Garden::getCurrentId()])
-            ->orderBy('id DESC')
+            ->orderBy('id ASC')
             ->all();
     }
 

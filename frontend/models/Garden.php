@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\web\NotFoundHttpException;
 
 /**
  * This is the model class for table "garden".
@@ -44,6 +45,7 @@ class Garden extends \yii\db\ActiveRecord
 
     public static function getCurrentId()
     {
+//        throw new NotFoundHttpException();
         return 1;
     }
 }
