@@ -2,13 +2,13 @@
 namespace frontend\controllers;
 
 use app\models\Counter;
-use app\models\Garden;
+use common\models\Garden;
 use app\models\GroupCounter;
 use app\models\Indication;
 use app\models\Pay;
 use app\models\Street;
 use app\models\Group;
-use app\models\House;
+use common\models\House;
 use app\models\Price;
 use app\models\GroupTestimony;
 use app\models\HouseHistory;
@@ -21,12 +21,12 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use common\models\LoginForm;
+use app\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
+use app\models\SignupForm;
 use frontend\models\ContactForm;
-
+use yii\web\NotFoundHttpException;
 //use frontend\models\Streets; // 123
 
 /**
@@ -37,33 +37,33 @@ class SiteController extends Controller
     /**
      * @inheritdoc
      */
-    // public function behaviors()
-    // {
-    //     return [
-    //         'access' => [
-    //             'class' => AccessControl::className(),
-    //             'only' => ['logout', 'signup'],
-    //             'rules' => [
-    //                 [
-    //                     'actions' => ['signup'],
-    //                     'allow' => true,
-    //                     'roles' => ['?'],
-    //                 ],
-    //                 [
-    //                     'actions' => ['logout'],
-    //                     'allow' => true,
-    //                     'roles' => ['@'],
-    //                 ],
-    //             ],
-    //         ],
-    //         'verbs' => [
-    //             'class' => VerbFilter::className(),
-    //             'actions' => [
-    //                 'logout' => ['post'],
-    //             ],
-    //         ],
-    //     ];
-    // }
+     public function behaviors()
+     {
+         return [
+             'access' => [
+                 'class' => AccessControl::className(),
+                 'only' => ['login', 'logout', 'signup', 'index'],
+                 'rules' => [
+                     [
+                         'actions' => ['login', 'signup'],
+                         'allow' => true,
+                         'roles' => ['?'],
+                     ],
+                     [
+                         'actions' => ['logout', 'index'],
+                         'allow' => true,
+                         'roles' => ['@'],
+                     ],
+                 ],
+             ],
+             'verbs' => [
+                 'class' => VerbFilter::className(),
+                 'actions' => [
+                     'logout' => ['post'],
+                 ],
+             ],
+         ];
+     }
 
     /**
      * @inheritdoc
@@ -527,6 +527,29 @@ class SiteController extends Controller
      *
      * @return mixed
      */
+    public function actionEl()
+    {
+        if (!Yii::$app->user->isGuest)
+        {
+            $customer=Yii::$app->user->getIdentity();
+
+            if (!$customer){
+                throw new NotFoundHttpException('Customer not found');
+            }
+
+            if (!$customer->garden){
+                throw new NotFoundHttpException('Garden not found');
+            }
+
+            // Если садоводство заблокировано то выводим сообщение
+            if (!$customer->garden->status) {
+                return $this->render('index');
+            }
+        }
+        $this->layout = false;
+        return $this->render('el');
+    }
+
     public function actionIndex()
     {
         return $this->render('index');

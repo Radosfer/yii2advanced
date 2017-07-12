@@ -5,7 +5,7 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use common\models\LoginForm;
+use app\models\AdminLoginForm;
 
 /**
  * Site controller
@@ -52,7 +52,12 @@ class SiteController extends Controller
             ],
         ];
     }
-
+// После действия запоминаем его URL для goBack();
+    public function afterAction($action, $result)
+    {
+        Yii::$app->getUser()->setReturnUrl(Yii::$app->request->url);
+        return parent::afterAction($action, $result);
+    }
     /**
      * Displays homepage.
      *
@@ -71,10 +76,11 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
+
             return $this->goHome();
         }
 
-        $model = new LoginForm();
+        $model = new AdminLoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
