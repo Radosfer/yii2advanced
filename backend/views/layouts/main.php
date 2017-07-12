@@ -28,26 +28,37 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'My Company',
+        'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
     $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-    ];
-    if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
-    } else {
+        ['label' => 'Главная страница',  'url' => ['/site/index']]
+        ];
+    if (!Yii::$app->user->isGuest){
+        $menuItems = [
+            ['label' => 'Главная страница',  'url' => ['/site/index']],
+            ['label' => 'Редактирование', 'items' => [['label' => 'Пользователи', 'url' => ['/customer/index']],
+                                                      ['label' => 'Садоводчества', 'url' => ['/garden/index']],
+                                                      ['label' => 'Дома', 'url' => ['/house/index']],
+                                                      ['label' => 'Цена оплаты дома', 'url' => ['/house-price/index']],],
+            ],
+                     ];
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                'Выйти (' . Yii::$app->user->identity->customer_name . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()
             . '</li>';
+
+    }
+    else
+    {
+        $menuItems[] = ['label' => 'Идентификация', 'url' => ['/site/login']];
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
@@ -67,7 +78,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+        <p class="pull-left">&copy; <?= Yii::$app->name.' '.date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
