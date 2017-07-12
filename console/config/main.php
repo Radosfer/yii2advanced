@@ -26,6 +26,13 @@ return [
                 ],
             ],
         ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'defaultTimeZone' => 'Europe/Kiev',
+            'timeZone' => 'Europe/Kiev',
+            'dateFormat' => 'php:Y-m-d H:i:s',
+        ],
+
     ],
     'params' => $params,
 ];

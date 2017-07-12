@@ -10,6 +10,8 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
+    'name' => 'Садоводчества',
+    'language' => 'ru-RU',
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [
@@ -17,13 +19,19 @@ return [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'app\models\Admin',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
             'name' => 'advanced-backend',
+        ],
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'defaultTimeZone' => 'Europe/Kiev',
+            'timeZone' => 'Europe/Kiev',
+            'dateFormat' => 'php:Y-m-d H:i:s',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -37,14 +45,14 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
+
     ],
     'params' => $params,
 ];
