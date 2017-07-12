@@ -12,8 +12,10 @@
 <div class=container>
     <div id=app></div>
 </div>
-<script>  var AUTH_USER = <?= Yii::$app->user->identity->auth_key;?>;
-var baseUrl = 'http://electro.dev';</script>
+<script>
+    var AUTH_USER = "<?= Yii::$app->user->identity->auth_key;?>";
+    var baseUrl = '';
+</script>
 <script src=https://code.jquery.com/jquery-3.2.1.min.js></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js></script>
 <script src=/static/sweetalert/dist/sweetalert-dev.js></script>
