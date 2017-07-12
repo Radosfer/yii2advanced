@@ -1,9 +1,9 @@
 <?php
 
-namespace app\models;
+namespace common\models;
 
 use Yii;
-
+use common\models\Garden;
 /**
  * This is the model class for table "house".
  *
@@ -44,9 +44,21 @@ class House extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getGardenName()
+    {
+        $garden = $this->garden;
+        return $garden ? $garden->garden_name : '';
+    }
+
+    public function getGarden()
+    {
+        return $this->hasOne(Garden::className(), ['id' => 'garden_id']);
+    }
+
     /**
      * @inheritdoc
      */
+
     public function attributeLabels()
     {
         return [
