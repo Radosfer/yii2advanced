@@ -26,7 +26,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use app\models\SignupForm;
 use frontend\models\ContactForm;
-
+use yii\web\NotFoundHttpException;
 //use frontend\models\Streets; // 123
 
 /**
@@ -529,6 +529,23 @@ class SiteController extends Controller
      */
     public function actionEl()
     {
+        if (!Yii::$app->user->isGuest)
+        {
+            $customer=Yii::$app->user->getIdentity();
+
+            if (!$customer){
+                throw new NotFoundHttpException('Customer not found');
+            }
+
+            if (!$customer->garden){
+                throw new NotFoundHttpException('Garden not found');
+            }
+
+            // Если садоводство заблокировано то выводим сообщение
+            if (!$customer->garden->status) {
+                return $this->render('index');
+            }
+        }
         $this->layout = false;
         return $this->render('el');
     }
