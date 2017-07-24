@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m170704_163657_history extends Migration
+class m170724_144650_deposit extends Migration
 {
     public function up()
     {
@@ -12,22 +12,19 @@ class m170704_163657_history extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('history', [
+        $this->createTable('deposit', [
             'id' => $this->primaryKey(),
             'house_id' => $this->integer(11)->notNull(),
             'date' => $this->char(255)->notNull(),
-            'pay' => $this->float()->notNull(),
-            'testimony' => $this->integer(11)->notNull(),
-            'tariff' => $this->float()->notNull(),
-            'money' => $this->float()->notNull(),
-            'start_indication' => $this->integer(11)->notNull(),
+            'purpose' => $this->char(255)->notNull(),
+            'amount' => $this->float()->notNull(),
             'garden_id' => $this->integer(11)->notNull(),
         ], $tableOptions);
     }
 
     public function down()
     {
-        echo "m170704_163657_history cannot be reverted.\n";
+        echo "m170724_144650_deposit cannot be reverted.\n";
 
         return false;
     }

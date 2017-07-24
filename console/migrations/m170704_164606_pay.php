@@ -17,7 +17,7 @@ class m170704_164606_pay extends Migration
             'house_id' => $this->integer(11)->notNull(),
             'created_at' => $this->char(255)->notNull(),
             'price_id' => $this->integer(11)->notNull(),
-            'amount' => $this->integer(11)->notNull(),
+            'amount' => $this->float()->notNull(),
             'garden_id' => $this->integer(11)->notNull(),
         ], $tableOptions);
     }
