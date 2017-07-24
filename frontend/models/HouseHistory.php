@@ -10,10 +10,10 @@ use Yii;
  * @property integer $id
  * @property integer $house_id
  * @property string $date
- * @property integer $pay
+ * @property double $pay
  * @property integer $testimony
- * @property integer $tariff
- * @property integer $money
+ * @property double $tariff
+ * @property double $money
  * @property integer $start_indication
  * @property integer $garden_id
  */
@@ -34,7 +34,8 @@ class HouseHistory extends \yii\db\ActiveRecord
     {
         return [
             [['house_id', 'date', 'pay', 'testimony', 'tariff', 'money', 'start_indication'], 'required'],
-            [['house_id', 'pay', 'testimony', 'tariff', 'money', 'start_indication'], 'integer'],
+            [['house_id', 'testimony', 'start_indication'], 'integer'],
+            [['tariff', 'pay', 'money'], 'number'],
             [['date'], 'string', 'max' => 255],
             [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];

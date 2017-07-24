@@ -52,7 +52,9 @@ return [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'counter', 'pluralize' => false],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'indication', 'pluralize' => false],
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'pay', 'pluralize' => false],
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'testimony', 'pluralize' => false]
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'testimony', 'pluralize' => false],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'deposit', 'pluralize' => false],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'history', 'pluralize' => false]
             ],
         ],
     ],

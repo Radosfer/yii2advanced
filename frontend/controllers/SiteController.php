@@ -6,6 +6,7 @@ use app\models\Garden;
 use app\models\GroupCounter;
 use app\models\Indication;
 use app\models\Pay;
+use app\models\Deposit;
 use app\models\Street;
 use app\models\Group;
 use app\models\House;
@@ -86,7 +87,7 @@ class SiteController extends Controller
         // ...set `$this->enableCsrfValidation` here based on some conditions...
         // call parent method that will check CSRF if such property is true.
 
-        $actions = ['indication', 'pay', 'testimony', 'history', 'counter', 'group', 'group_testimony', 'add_price'];
+        $actions = ['indication', 'pay', 'testimony', 'history', 'counter', 'group', 'group_testimony', 'add_price', 'deposit'];
         if (in_array($action->id, $actions)) {
             # code...
             $this->enableCsrfValidation = false;
@@ -142,11 +143,11 @@ class SiteController extends Controller
             $money = $house->money;
             $testimony = $house->testimony;
             if ($money > 0) {
-                $new_testimony = $money / $value;
-                $house->testimony = $new_testimony;
+                $new_testimony = ($money * 100) / ($value * 100);
+                $house->testimony = floor($new_testimony);
             } else {
                 $new_money = $testimony * $value;
-                $house->money = $new_money;
+                $house->money = round($new_money, 2);
             }
 //            $house->update(false); // skipping validation as no user input is involved
             $house->save(); // skipping validation as no user input is involved
@@ -204,6 +205,20 @@ class SiteController extends Controller
 
         $house_id = Yii::$app->request->post('house_id');
         return HouseHistory::find()//todo проверка наличия записи
+        ->where([
+            'house_id' => $house_id,
+            'garden_id' => Garden::getCurrentId(),
+        ])
+            ->orderBy('id DESC')
+            ->all();
+    }
+
+    public function actionDeposit()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $house_id = Yii::$app->request->post('house_id');
+        return Deposit::find()//todo проверка наличия записи
         ->where([
             'house_id' => $house_id,
             'garden_id' => Garden::getCurrentId(),
@@ -394,14 +409,16 @@ class SiteController extends Controller
 
         if ($start_or_not == 0) {
             $money = $money - (($value_new - $previous_indication - $start_indication) * $price_value);
+            $money = round($money, 2);
             $start_or_not = 1;
         } else {
             $money = $money - (($value_new - $previous_indication) * $price_value);
+            $money = round($money, 2);
         }
 
         $house->money = $money;
         $house->start_value = $start_or_not;
-        $house->testimony = $money / $price_value;
+        $house->testimony = floor(($money * 100) / ($price_value * 100));
         $house->last_indication = $value_new;
 //        $house->spent = $value_new - $start_indication + $spent;
         $house->spent = $value_new - $last_indication + $spent;
@@ -415,11 +432,13 @@ class SiteController extends Controller
         $history->pay = 0;
         $history->testimony = $value_new;
         $history->tariff = $price_value;
+//        $history->tariff = 0;
         $history->money = $money;
         $history->start_indication = $start_indication;
         $history->garden_id = Garden::getCurrentId();
         $history->save();
 
+//        return [$money, $value_new, $price_value, $start_indication];
         return $house;
 
     }
@@ -480,16 +499,15 @@ class SiteController extends Controller
         $money_value = $house->money;
         $testimony = $house->testimony;
         if ($money_value < 0) {
-            $new_testimony = $amount / $price_value + $testimony;
+            $new_testimony = ($amount * 100) / ($price_value * 100) + $testimony;
             $money_value = $new_testimony * $price_value;
         } else {
-
             $money_value = $money_value + $amount;
-            $new_testimony = $money_value / $price_value;
+            $new_testimony = ($money_value * 100) / ($price_value * 100);
         }
 
-        $house->testimony = $new_testimony;
-        $house->money = $money_value;
+        $house->testimony = floor($new_testimony);
+        $house->money = round($money_value, 2);
         $house->save();
 
         $history = new HouseHistory();
@@ -498,11 +516,11 @@ class SiteController extends Controller
         $history->pay = $amount;
         $history->testimony = 0;
         $history->tariff = $price_value;
-        $history->money = $money_value;
+        $history->money = round($money_value, 2);
         $history->start_indication = $start_indication;
         $history->garden_id = Garden::getCurrentId();
         $history->save();
-
+//        return [$new_testimony , floor($new_testimony)];
         return $house->attributes;
     }
 
