@@ -40,7 +40,6 @@ AppAsset::register($this);
         ['label' => 'Наши контакты', 'url' => ['/site/contact']],
     ];
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Зарегистрироваться', 'url' => ['/site/signup']];
         $menuItems[] = ['label' => 'Идентификация', 'url' => ['/site/login']];
     } else {
         $menuItems[] = '<li>'
@@ -67,14 +66,6 @@ AppAsset::register($this);
         <?= $content ?>
     </div>
 </div>
-
-<footer class="footer">
-    <div class="container">
-        <p class="pull-left">&copy; <?= Yii::$app->name.' '.date('Y') ?></p>
-
-        <p class="pull-right"><?= Yii::powered() ?></p>
-    </div>
-</footer>
 
 <?php $this->endBody() ?>
 </body>

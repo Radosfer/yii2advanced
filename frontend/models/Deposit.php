@@ -2,29 +2,27 @@
 
 namespace app\models;
 
-use Yii;
 use common\models\Garden;
+use Yii;
+
 /**
- * This is the model class for table "history".
+ * This is the model class for table "deposit".
  *
  * @property integer $id
  * @property integer $house_id
+ * @property double $amount
+ * @property string $purpose
  * @property string $date
- * @property double $pay
- * @property integer $testimony
- * @property double $tariff
- * @property double $money
- * @property integer $start_indication
  * @property integer $garden_id
  */
-class HouseHistory extends \yii\db\ActiveRecord
+class Deposit extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'history';
+        return 'deposit';
     }
 
     /**
@@ -33,9 +31,10 @@ class HouseHistory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['house_id', 'date', 'pay', 'testimony', 'tariff', 'money', 'start_indication'], 'required'],
-            [['house_id', 'testimony', 'start_indication'], 'integer'],
-            [['tariff', 'pay', 'money'], 'number'],
+            [['house_id', 'amount', 'purpose', 'date'], 'required'],
+            [['house_id', 'garden_id'], 'integer'],
+            [['amount'], 'number'],
+            [['purpose'], 'string'],
             [['date'], 'string', 'max' => 255],
             [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];
@@ -49,12 +48,9 @@ class HouseHistory extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'house_id' => 'House ID',
+            'amount' => 'Amount',
+            'purpose' => 'Purpose',
             'date' => 'Date',
-            'pay' => 'Pay',
-            'testimony' => 'Testimony',
-            'tariff' => 'Tariff',
-            'money' => 'Money',
-            'start_indication' => 'Start Indication',
             'garden_id' => 'Garden ID',
         ];
     }

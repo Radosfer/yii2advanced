@@ -52,7 +52,7 @@ class SignupForm extends Model
             'customer_name' => 'Имя пользователя',
             'email' => 'Email',
             'password' => 'Пароль',
-            'garden_id' => 'Садоводчество',
+            'garden_id' => 'Организация',
         ];
     }
 

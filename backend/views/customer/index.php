@@ -39,13 +39,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($model, $key, $index, $column) {
                     /** @var Customer $model */
-                    return Html::a(Html::encode($model->customer_name), ['view', 'id' => $model->id]);
+                    return Html::a(Html::encode($model->customer_name), ['update', 'id' => $model->id]);
                 }
             ],
          //   'auth_key',
          //   'password_hash',
          //   'password_reset_token',
-            'email:email',
+            'email',
         //    'status',
             [
                 'attribute' => 'status',
@@ -81,28 +81,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     default: $class = 'danger';
                         break;
                                 };
-                $html = Html::tag('span', Html::encode($value), ['class' => 'label label-' . $class]);
+             //  $html = Html::tag('span', Html::encode($value), ['class' => 'label label-' . $class]);
+                $html = Html::a(Html::tag('span', Html::encode($value), ['class' => 'label label-' . $class]), ['addmoney', 'id' => $model->id],
+                    [
+                        'class' => 'link',
+                        'title' => 'Пополнить счет',
+                        'data' => [
+                            'method' => 'post',
+                        ],
+                    ]);
                 return $value === null ? $column->grid->emptyCell : $html;
             }
             ],
 
             [
-                'label' => 'Пополнение',
-                'format' => 'raw',
-                'value' => function($model){
-                    return Html::a(
-                        '+',
-                        ['addmoney', 'id' => $model->id],
-                        [
-                            'title' => 'Пополнить',
-                        ]
-                    );
-                }
-            ],
-
-            [
              'class' => 'yii\grid\ActionColumn',
              'header'=>'Действия',
+             'template' => '{update} {delete}',
              //'headerOptions' => ['width' => '80'],
              'buttons' => [
                            'delete' => function ($url,$model)
@@ -123,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                        return Html::a('<span class="glyphicon glyphicon-plus"></span>', ['undelete', 'id' => $model->id],
                                            [
                                                'class' => 'delete-link',
-                                               'title' => 'Разблокировать садоводчество',
+                                               'title' => 'Разблокировать организацию',
                                                'data' => [
                                                    'confirm' => 'Разблокировать пользователя',
                                                    'method' => 'post',

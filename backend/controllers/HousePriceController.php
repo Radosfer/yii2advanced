@@ -42,25 +42,4 @@ class HousePriceController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-
-
-    /**
-     * Creates a new HousePrice model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new HousePrice();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index']);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-
 }

@@ -123,9 +123,10 @@ class Garden extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'garden_name' => 'Название Садоводчества',
+            'garden_name' => 'Название Организации',
             'status' => 'Статус',
             'money' => 'Денежный счет',
+            'house_price' => 'Цена за объект',
             'till_date' => 'Активен до:',
             'created_at' => 'Создан',
             'updated_at' => 'Изменен',

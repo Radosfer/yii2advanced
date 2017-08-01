@@ -10,7 +10,7 @@ use Yii;
  * @property integer $id
  * @property integer $counter_id
  * @property string $created_at
- * @property integer $value
+ * @property double $value
  */
 class HouseTestimony extends \yii\db\ActiveRecord
 {
@@ -29,7 +29,8 @@ class HouseTestimony extends \yii\db\ActiveRecord
     {
         return [
             [['counter_id', 'created_at', 'value'], 'required'],
-            [['counter_id', 'value'], 'integer'],
+            [['counter_id'], 'integer'],
+            [['value'], 'number'],
             [['created_at'], 'string', 'max' => 255],
         ];
     }

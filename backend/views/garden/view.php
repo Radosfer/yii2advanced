@@ -8,7 +8,7 @@ use common\models\Customer;
 /* @var $model app\models\Gardens */
 
 $this->title = $model->garden_name;
-$this->params['breadcrumbs'][] = ['label' => 'Садоводчества', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Организации', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="gardens-view">
@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => ' Будут удалены  '.$model->getCustomers()->count().'  пользователя при удалении садоводчества '.$model->garden_name.
+                'confirm' => ' Будут удалены  '.$model->getCustomers()->count().'  пользователя при удалении организации '.$model->garden_name.
                     ', уверены что хотите удалить его ?',
                 'method' => 'post',
                 ],
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo Html::a('Удалить', ['delete', 'id' => $model->id], [
                 'class' => 'btn btn-danger',
                 'data' => [
-                    'confirm' => ' Пользователей данного садоводчества нет, уверены что хотите удалить его ?',
+                    'confirm' => ' Пользователей данной организации нет, уверены что хотите удалить его ?',
                     'method' => 'post',
                 ],
             ]);

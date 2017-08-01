@@ -1,6 +1,7 @@
  <?php
 
 use common\models\Garden;
+use common\models\HousePrice;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -62,6 +63,10 @@ $FREE_PERIOD[Yii::$app->formatter->asDate($nowtime)] = '90 Дней';
 
     <?= $form->field($model, 'status')->dropdownList([Garden::STATUS_ACTIVE => 'Активно',
         Garden::STATUS_BLOCKED => 'Заблокировано']); ?>
+
+    <?= $form->field($model_house_price, 'price')->textInput(['value' => HousePrice::find()->select('price')->where(['garden_id' => $model->id])->orderBy(['id' => SORT_DESC])->scalar()]) ?>
+
+    <?= $form->field($model_house_price, 'garden_id')->hiddenInput(['value'=>$model->id])->label(false)  ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Создать' : 'Изменить', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

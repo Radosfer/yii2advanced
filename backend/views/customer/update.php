@@ -7,8 +7,7 @@ use yii\helpers\Html;
 
 $this->title = 'Изменить данные пользователя: ' . $model->customer_name;
 $this->params['breadcrumbs'][] = ['label' => 'Пользователи', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->customer_name, 'url' => ['view', 'id' => $model->CustomerId]];
-$this->params['breadcrumbs'][] = 'Изменить';
+$this->params['breadcrumbs'][] = 'Изменить данные пользователя: ' . $model->customer_name;
 ?>
 <div class="customer-update">
 

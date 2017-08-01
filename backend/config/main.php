@@ -10,10 +10,12 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
-    'name' => 'Садоводчества',
+    'name' => 'Организации',
     'language' => 'ru-RU',
     'bootstrap' => ['log'],
-    'modules' => [],
+    'modules' => [
+        'redactor' => 'yii\redactor\RedactorModule',
+    ],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',

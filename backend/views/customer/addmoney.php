@@ -37,7 +37,7 @@ use common\models\CustomerAmmountHistory;
     <div class="col-lg-5">
         <?php $form = ActiveForm::begin(['id' => 'update-customer-form']); ?>
 
-        <?= $form->field($model, 'money')->textInput(['value' => 0,'autofocus' => true]) ?>
+        <?= $form->field($model, 'money')->textInput(['autofocus' => true]) ?>
 
         <div class="form-group">
             <?= Html::submitButton('Добавить', ['class' => 'btn btn-primary']) ?>

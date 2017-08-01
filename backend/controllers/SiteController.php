@@ -6,6 +6,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\models\AdminLoginForm;
+use common\models\AboutContact;
 
 /**
  * Site controller
@@ -26,7 +27,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index'],
+                        'actions' => ['logout', 'index', 'about', 'contact'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -101,4 +102,31 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+    public function actionAbout()
+    {
+        $model =AboutContact::findOne(['id' => 1]);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('about', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    public function actionContact()
+    {
+        $model =AboutContact::findOne(['id' => 1]);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('contact', [
+                'model' => $model,
+            ]);
+        }
+    }
+
 }

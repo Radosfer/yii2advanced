@@ -41,8 +41,8 @@ class CustomerAddMoney extends Model
             'customer_name' => 'Имя пользователя',
             'email' => 'Email',
             'password' => 'Пароль',
-            'garden_id' => 'Садоводчество',
-            'money' => 'Денежный счет'
+            'garden_id' => 'Организация',
+            'money' => 'Операционные деньги'
         ];
     }
 

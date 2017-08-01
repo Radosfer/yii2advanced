@@ -11,7 +11,7 @@ use common\models\Garden;
  * @property integer $house_id
  * @property string $created_at
  * @property integer $price_id
- * @property integer $amount
+ * @property double $amount
  * @property integer $garden_id
  */
 class Pay extends \yii\db\ActiveRecord
@@ -31,7 +31,8 @@ class Pay extends \yii\db\ActiveRecord
     {
         return [
             [['house_id', 'created_at', 'price_id', 'amount'], 'required'],
-            [['house_id', 'price_id', 'amount'], 'integer'],
+            [['house_id', 'price_id'], 'integer'],
+            [['amount'], 'number'],
             [['created_at'], 'string', 'max' => 255],
             [['garden_id'], 'default', 'value' => Garden::getCurrentId()],
         ];

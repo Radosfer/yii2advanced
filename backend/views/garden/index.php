@@ -5,12 +5,13 @@ use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use common\models\Garden;
 use common\models\customer;
+use common\models\HousePrice;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\GardensSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Садоводчества';
+$this->title = 'Организации';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="gardens-index">
@@ -19,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Зарегистрировать новое садоводчество', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Зарегистрировать новую организацию', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php $form = ActiveForm::begin(); ?>
@@ -40,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($model, $key, $index, $column) {
                     /** @var Customer $model */
-                    return Html::a(Html::encode($model->garden_name), ['view', 'id' => $model->id]);
+                    return Html::a(Html::encode($model->garden_name), ['update', 'id' => $model->id]);
                 }
             ],
             [
@@ -71,12 +72,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $value === null ? $column->grid->emptyCell : $html;
             }
             ],
+            [
+                'attribute' => 'house_price',
+                'format' => 'raw',
+                'value' => function ($model, $key, $index, $column) {
+                    return HousePrice::find()->select('price')->where(['garden_id' => $model->id])->orderBy(['id' => SORT_DESC])->scalar();
+                }
+            ],
+
 
             [
                 'class' => 'yii\grid\ActionColumn',
             //    'header'=>'Действия',
              //   'headerOptions' => ['width' => '80'],
-                'template' => '{view} {update} {delete}',
+                'template' => '{update} {delete}',
     'buttons' =>[
     'delete' => function ($url,$model)
     {
@@ -84,15 +93,15 @@ $this->params['breadcrumbs'][] = $this->title;
     if ($model->status)
     {
         if ($model->customers)
-        { $confirm = ' Будет установлен статус "ЗАБЛОКИРОВАН"  ' . $model->getCustomers()->count() . '  пользователям при изменении статуса садоводчества  ' . $model->garden_name . '  на "ЗАБЛОКИРОВАНО"' .
+        { $confirm = ' Будет установлен статус "ЗАБЛОКИРОВАН"  ' . $model->getCustomers()->count() . '  пользователям при изменении статуса организации  ' . $model->garden_name . '  на "ЗАБЛОКИРОВАНО"' .
             ', уверены что хотите установить статус "ЗАБЛОКИРОВАН" ?'; }
         else
-        { $confirm = ' Пользователей данного садоводчества нет, уверены что хотите установить статус "ЗАБЛОКИРОВАН" ?'; }
+        { $confirm = ' Пользователей данной организации нет, уверены что хотите установить статус "ЗАБЛОКИРОВАН" ?'; }
 
         return Html::a('<span class="glyphicon glyphicon-minus"></span>', ['delete', 'id' => $model->id],
             [
                 'class' => 'delete-link',
-                'title' => 'Заблокировать садоводчество',
+                'title' => 'Заблокировать организацию',
                 'data' => [
                 'confirm' => $confirm,
                 'method' => 'post',
@@ -102,15 +111,15 @@ $this->params['breadcrumbs'][] = $this->title;
     else {
 
         if ($model->customers)
-        { $confirm = ' Будет установлен статус "АКТИВЕН"  ' . $model->getCustomers()->count() . '  пользователям при изменении статуса садоводчества  ' . $model->garden_name . '  на "АКТИВЕН"' .
+        { $confirm = ' Будет установлен статус "АКТИВЕН"  ' . $model->getCustomers()->count() . '  пользователям при изменении статуса организации  ' . $model->garden_name . '  на "АКТИВЕН"' .
             ', уверены что хотите установить статус "АКТИВЕН" ?'; }
         else
-        { $confirm = ' Пользователей данного садоводчества нет, уверены что хотите установить статус "АКТИВЕН" ?'; }
+        { $confirm = ' Пользователей данной организации нет, уверены что хотите установить статус "АКТИВЕН" ?'; }
 
         return Html::a('<span class="glyphicon glyphicon-plus"></span>', ['undelete', 'id' => $model->id],
             [
             'class' => 'delete-link',
-            'title' => 'Разблокировать садоводчество',
+            'title' => 'Разблокировать организацию',
             'data' => [
                 'confirm' => $confirm,
                 'method' => 'post',

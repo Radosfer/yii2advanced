@@ -43,6 +43,7 @@ class HousePrice extends ActiveRecord
     {
         return [
             [['price'], 'number'],
+            [['price'], 'required'],
             [['garden_id'], 'integer'],
         ];
     }
@@ -65,8 +66,8 @@ class HousePrice extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'price' => 'Цена',
-            'garden_id' => 'Садоводчество',
+            'price' => 'Цена за объект',
+            'garden_id' => 'Организация',
             'created_at' => 'Создан',
         ];
     }

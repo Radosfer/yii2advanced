@@ -13,6 +13,8 @@ class m170711_144752_init extends Migration
         }
 
         $this->execute("
+    CREATE DATABASE IF NOT EXISTS `electra` /*!40100 DEFAULT CHARACTER SET utf8 */;
+    USE `electra`;
    CREATE TABLE IF NOT EXISTS `admin` (
    `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -205,10 +207,10 @@ CREATE TABLE IF NOT EXISTS `history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `house_id` int(11) NOT NULL,
   `date` varchar(255) NOT NULL,
-  `pay` int(11) NOT NULL,
+  `pay` float NOT NULL,
   `testimony` int(11) NOT NULL,
-  `tariff` int(11) NOT NULL,
-  `money` int(11) NOT NULL,
+  `tariff` float NOT NULL,
+  `money` float NOT NULL,
   `start_indication` int(11) NOT NULL,
   `garden_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
@@ -288,15 +290,6 @@ INSERT INTO `indication` (`id`, `counter_id`, `created_at`, `value`, `garden_id`
 	(489, 177, 'Sun Jun 11 2017 18:28:44 GMT+0300 (EEST)', 200, 1),
 	(490, 185, 'Mon Jun 12 2017 17:48:07 GMT+0300 (EEST)', 300, 1),
 	(491, 182, 'Thu Jul 06 2017 18:30:52 GMT+0300', 100, 1);
-
-CREATE TABLE IF NOT EXISTS `migration` (
-  `version` varchar(180) NOT NULL,
-  `apply_time` int(11) DEFAULT NULL,
-  PRIMARY KEY (`version`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO `migration` (`version`, `apply_time`) VALUES
-	('m000000_000000_base', 1494510040),
            ");
 
         $this->execute("
@@ -305,7 +298,7 @@ CREATE TABLE IF NOT EXISTS `pay` (
   `house_id` int(11) NOT NULL,
   `created_at` varchar(255) NOT NULL,
   `price_id` int(11) NOT NULL,
-  `amount` int(11) NOT NULL,
+  `amount` float NOT NULL,
   `garden_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=236 DEFAULT CHARSET=utf8 COMMENT='house_money';
@@ -353,6 +346,26 @@ INSERT INTO `streets` (`id`, `title`, `garden_id`) VALUES
 	(112, '5d', 8),
 	(113, '1j', 1),
 	(114, '1k', 1);
+	
+CREATE TABLE IF NOT EXISTS `about_contact` (
+  `id` int(11) NOT NULL,
+  `about` text,
+  `contact` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `about_contact` (`id`, `about`, `contact`) VALUES
+	(1, '<p>Мы хорошие ребята</p>\r\n', '<p>Руднев Вячеслав</p>\r\n\r\n<p>м.т. - 0509642667</p>\r\n');	
+	
+CREATE TABLE IF NOT EXISTS `deposit` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `house_id` int(11) NOT NULL,
+  `date` char(255) COLLATE utf8_unicode_ci NOT NULL,
+  `purpose` char(255) COLLATE utf8_unicode_ci NOT NULL,
+  `amount` float NOT NULL,
+  `garden_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
            ") ;
     }
 
@@ -373,5 +386,6 @@ INSERT INTO `streets` (`id`, `title`, `garden_id`) VALUES
         $this->dropTable('{{%pay}}');
         $this->dropTable('{{%price}}');
         $this->dropTable('{{%streets}}');
+        $this->dropTable('{{%about_contact}}');
     }
 }

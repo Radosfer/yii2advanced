@@ -6,6 +6,7 @@ use common\models\Garden;
 use app\models\GroupCounter;
 use app\models\Indication;
 use app\models\Pay;
+use app\models\Deposit;
 use app\models\Street;
 use app\models\Group;
 use common\models\House;
@@ -22,11 +23,8 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\models\LoginForm;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use app\models\SignupForm;
-use frontend\models\ContactForm;
 use yii\web\NotFoundHttpException;
+use common\models\AboutContact;
 //use frontend\models\Streets; // 123
 
 /**
@@ -86,7 +84,7 @@ class SiteController extends Controller
         // ...set `$this->enableCsrfValidation` here based on some conditions...
         // call parent method that will check CSRF if such property is true.
 
-        $actions = ['indication', 'pay', 'testimony', 'history', 'counter', 'group', 'group_testimony', 'add_price'];
+        $actions = ['indication', 'pay', 'testimony', 'history', 'counter', 'group', 'group_testimony', 'add_price', 'deposit'];
         if (in_array($action->id, $actions)) {
             # code...
             $this->enableCsrfValidation = false;
@@ -142,11 +140,11 @@ class SiteController extends Controller
             $money = $house->money;
             $testimony = $house->testimony;
             if ($money > 0) {
-                $new_testimony = $money / $value;
-                $house->testimony = $new_testimony;
+                $new_testimony = ($money * 100) / ($value * 100);
+                $house->testimony = floor($new_testimony);
             } else {
                 $new_money = $testimony * $value;
-                $house->money = $new_money;
+                $house->money = round($new_money, 2);
             }
 //            $house->update(false); // skipping validation as no user input is involved
             $house->save(); // skipping validation as no user input is involved
@@ -204,6 +202,20 @@ class SiteController extends Controller
 
         $house_id = Yii::$app->request->post('house_id');
         return HouseHistory::find()//todo проверка наличия записи
+        ->where([
+            'house_id' => $house_id,
+            'garden_id' => Garden::getCurrentId(),
+        ])
+            ->orderBy('id DESC')
+            ->all();
+    }
+
+    public function actionDeposit()
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $house_id = Yii::$app->request->post('house_id');
+        return Deposit::find()//todo проверка наличия записи
         ->where([
             'house_id' => $house_id,
             'garden_id' => Garden::getCurrentId(),
@@ -394,14 +406,16 @@ class SiteController extends Controller
 
         if ($start_or_not == 0) {
             $money = $money - (($value_new - $previous_indication - $start_indication) * $price_value);
+            $money = round($money, 2);
             $start_or_not = 1;
         } else {
             $money = $money - (($value_new - $previous_indication) * $price_value);
+            $money = round($money, 2);
         }
 
         $house->money = $money;
         $house->start_value = $start_or_not;
-        $house->testimony = $money / $price_value;
+        $house->testimony = floor(($money * 100) / ($price_value * 100));
         $house->last_indication = $value_new;
 //        $house->spent = $value_new - $start_indication + $spent;
         $house->spent = $value_new - $last_indication + $spent;
@@ -480,16 +494,16 @@ class SiteController extends Controller
         $money_value = $house->money;
         $testimony = $house->testimony;
         if ($money_value < 0) {
-            $new_testimony = $amount / $price_value + $testimony;
+            $new_testimony = ($amount * 100) / ($price_value * 100) + $testimony;
             $money_value = $new_testimony * $price_value;
         } else {
 
             $money_value = $money_value + $amount;
-            $new_testimony = $money_value / $price_value;
+            $new_testimony = ($money_value * 100) / ($price_value * 100);
         }
 
-        $house->testimony = $new_testimony;
-        $house->money = $money_value;
+        $house->testimony = floor($new_testimony);
+        $house->money = round($money_value, 2);
         $house->save();
 
         $history = new HouseHistory();
@@ -498,11 +512,10 @@ class SiteController extends Controller
         $history->pay = $amount;
         $history->testimony = 0;
         $history->tariff = $price_value;
-        $history->money = $money_value;
+        $history->money = round($money_value, 2);
         $history->start_indication = $start_indication;
         $history->garden_id = Garden::getCurrentId();
         $history->save();
-
         return $house->attributes;
     }
 
@@ -593,101 +606,21 @@ class SiteController extends Controller
      *
      * @return mixed
      */
+    public function actionAbout()
+    {
+        $model =AboutContact::findOne(['id' => 1]);
+            return $this->render('about', [
+                'model' => $model,
+            ]);
+    }
+
     public function actionContact()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending your message.');
-            }
-
-            return $this->refresh();
-        } else {
+        $model =AboutContact::findOne(['id' => 1]);
             return $this->render('contact', [
                 'model' => $model,
             ]);
-        }
     }
 
-    /**
-     * Displays about page.
-     *
-     * @return mixed
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 
-    /**
-     * Signs user up.
-     *
-     * @return mixed
-     */
-    public function actionSignup()
-    {
-        $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }
-            }
-        }
-
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Requests password reset.
-     *
-     * @return mixed
-     */
-    public function actionRequestPasswordReset()
-    {
-        $model = new PasswordResetRequestForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
-
-                return $this->goHome();
-            } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for the provided email address.');
-            }
-        }
-
-        return $this->render('requestPasswordResetToken', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Resets password.
-     *
-     * @param string $token
-     * @return mixed
-     * @throws BadRequestHttpException
-     */
-    public function actionResetPassword($token)
-    {
-        try {
-            $model = new ResetPasswordForm($token);
-        } catch (InvalidParamException $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
-            Yii::$app->session->setFlash('success', 'New password saved.');
-
-            return $this->goHome();
-        }
-
-        return $this->render('resetPassword', [
-            'model' => $model,
-        ]);
-    }
 }

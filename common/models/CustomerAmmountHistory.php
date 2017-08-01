@@ -99,10 +99,10 @@ class CustomerAmmountHistory extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'customer_id' => 'Пользователь',
-            'garden_id' => 'Садоводчество',
+            'garden_id' => 'Организация',
             'operation' => 'Операция',
             'admin' => 'Имя администратора',
-            'operation_money' => 'Деньги операции',
+            'operation_money' => 'Операционные деньги',
             'created_at' => 'Дата проведения операции',
         ];
     }

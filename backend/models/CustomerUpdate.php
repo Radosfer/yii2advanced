@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\base\Model;
 use common\Models\Customer;
+use yii\helpers\VarDumper;
 
 class CustomerUpdate extends Model
 {
@@ -16,6 +17,8 @@ class CustomerUpdate extends Model
     /**
      * @inheritdoc
      */
+    const SCENARIO_CREATE = 'create';
+    const SCENARIO_UPDATE = 'update';
 
     public function __construct(Customer $customer, $config = [])
     {
@@ -29,7 +32,7 @@ class CustomerUpdate extends Model
     public function rules()
     {
         return [
-            ['customer_name', 'trim'],
+            ['customer_name', 'trim',],
             ['customer_name', 'required'],
           //  ['customer_name', 'unique', 'targetClass' => '\common\models\Customer', 'message' => 'This customer_name has already been taken.'],
             ['customer_name', 'string', 'min' => 2, 'max' => 255],
@@ -40,8 +43,9 @@ class CustomerUpdate extends Model
             ['email', 'string', 'max' => 255],
         //    ['email', 'unique', 'targetClass' => '\common\models\Customer', 'message' => 'This email address has already been taken.'],
 
-            ['password', 'required'],
-            ['password', 'string', 'min' => 6],
+            ['password', 'required', 'on' => [self::SCENARIO_CREATE]],
+            ['password', 'string', 'min' => 6, 'on' => [self::SCENARIO_CREATE]],
+            ['password', 'string', 'on' => [self::SCENARIO_UPDATE]],
 
             ['garden_id', 'required'],
             ['garden_id', 'integer'],
@@ -55,7 +59,7 @@ class CustomerUpdate extends Model
             'customer_name' => 'Имя пользователя',
             'email' => 'Email',
             'password' => 'Пароль',
-            'garden_id' => 'Садоводчество',
+            'garden_id' => 'Организация',
         ];
     }
 
@@ -81,6 +85,7 @@ class CustomerUpdate extends Model
      */
     public function update()
     {
+
         if (!$this->validate()) {
             return null;
         } else {
@@ -88,8 +93,10 @@ class CustomerUpdate extends Model
             $customer->customer_name = $this->customer_name;
             $customer->email = $this->email;
             $customer->garden_id = $this->garden_id;
-            $customer->setPassword($this->password);
-            $customer->generateAuthKey();
+            if ((!$this->password==null) || (!$this->password=='')) {
+                $customer->setPassword($this->password);
+                $customer->generateAuthKey();
+            }
             return $customer->save() ? $customer : null;
         }
     }

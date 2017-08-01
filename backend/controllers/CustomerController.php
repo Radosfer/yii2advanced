@@ -67,8 +67,10 @@ class CustomerController extends Controller
         $customer = new Customer();
         $model = new CustomerUpdate($customer);
 
+        $model->scenario = CustomerUpdate::SCENARIO_CREATE;
+
         if ($model->load(Yii::$app->request->post())&& $model->update()) {
-            return $this->redirect(['view', 'id' => $customer->getId()]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -87,8 +89,10 @@ class CustomerController extends Controller
         $customer = $this->findModel($id);
         $model = new CustomerUpdate($customer);
 
+        $model->scenario = CustomerUpdate::SCENARIO_UPDATE;
+
         if ($model->load(Yii::$app->request->post()) && $model->update()) {
-            return $this->redirect(['view', 'id' => $id]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -103,7 +107,7 @@ class CustomerController extends Controller
         $model = new CustomerAddMoney($customer);
 
         if ($model->load(Yii::$app->request->post()) && $model->addmoney()) {
-            return $this->redirect(['view', 'id' => $id]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('addmoney', [
                 'model' => $model,

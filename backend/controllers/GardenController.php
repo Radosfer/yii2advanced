@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\Garden;
 use common\models\Customer;
+use common\models\HousePrice;
 use app\models\GardenSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -65,14 +66,18 @@ class GardenController extends Controller
     public function actionCreate()
     {
         $model = new Garden();
+        $model_house_price = new HousePrice ();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post()) && $model->save() && $model_house_price->load(Yii::$app->request->post())) {
+            $model_house_price->garden_id = $model->id;
+            if ($model_house_price->save()){
+                return $this->redirect(['index']);
+            }
         }
+                return $this->render('create', [
+                'model' => $model,
+                'model_house_price' => $model_house_price,
+            ]);
     }
 
     /**
@@ -84,12 +89,14 @@ class GardenController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model_house_price = new HousePrice ();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->save() && $model_house_price->load(Yii::$app->request->post()) && $model_house_price->save()) {
+            return $this->redirect(['index']);
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'model_house_price' => $model_house_price,
             ]);
         }
     }

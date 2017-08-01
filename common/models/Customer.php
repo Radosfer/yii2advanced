@@ -126,7 +126,7 @@ class Customer extends ActiveRecord implements IdentityInterface
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
-
+/*
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
@@ -137,7 +137,7 @@ class Customer extends ActiveRecord implements IdentityInterface
         }
         return false;
     }
-
+*/
     public function getGardenName()
     {
         $garden = $this->garden;
@@ -172,8 +172,8 @@ class Customer extends ActiveRecord implements IdentityInterface
             'status' => 'Статус',
             'password_hash' => 'Пароль',
             'password_reset_token' => 'Password Reset Token',
-            'garden_id' => 'Садоводчество',
-            'money' => 'Денежный счет cадоводчества',
+            'garden_id' => 'Организация',
+            'money' => 'Денежный счет организации',
         ];
     }
 }

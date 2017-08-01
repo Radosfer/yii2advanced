@@ -37,15 +37,15 @@ $this->title = Yii::$app->name;
                       ]); */
 
                 Modal::begin([
-                    'header' => '<h2>Пожалуйста внесите на счет садоводчества '.$customer->garden->garden_name.' - '.(-1*$customer->garden->money).' грн.!</h2>',
+                    'header' => '<h2>Пожалуйста внесите на счет организации '.$customer->garden->garden_name.' - '.(-1*$customer->garden->money).' грн.!</h2>',
                     'toggleButton' => [
                         'tag' => 'button',
                         'class' => 'btn-lg btn-block btn-danger',
-                        'label' => 'Ваше садоводчество '.$customer->garden->garden_name.' заблокировано!',
+                        'label' => 'Ваша организация '.$customer->garden->garden_name.' заблокирована!',
                     ]
                 ]);
 
-                echo 'Садоводчество '.$customer->garden->garden_name.' заблокировано.';
+                echo 'Организация '.$customer->garden->garden_name.' заблокирована.';
 
                 Modal::end();
             };
@@ -56,7 +56,7 @@ $this->title = Yii::$app->name;
         <p class="lead">Добро пожаловать.</p>
 
         <?php if ($customer->garden->status) {?>
-        <p><a class="btn btn-lg btn-success" href="http://vitalik/site/el">Войти</a></p>
+        <p><a class="btn btn-lg btn-success" href="http://vitalik/site/el">Управление организацией <?= $customer->garden->garden_name ?></a></p>
         <?php } ?>
     </div>
 

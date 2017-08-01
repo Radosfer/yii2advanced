@@ -7,7 +7,7 @@ use common\models\Garden;
 /* @var $searchModel app\models\HousePriceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Цена оплаты дома';
+$this->title = 'Цена оплаты объекта';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="house-price-index">
@@ -15,9 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <p>
-        <?= Html::a('Изменить цену оплаты за дом', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

@@ -41,9 +41,11 @@ AppAsset::register($this);
         $menuItems = [
             ['label' => 'Главная страница',  'url' => ['/site/index']],
             ['label' => 'Редактирование', 'items' => [['label' => 'Пользователи', 'url' => ['/customer/index']],
-                                                      ['label' => 'Садоводчества', 'url' => ['/garden/index']],
-                                                      ['label' => 'Дома', 'url' => ['/house/index']],
-                                                      ['label' => 'Цена оплаты дома', 'url' => ['/house-price/index']],],
+                                                      ['label' => 'Организации', 'url' => ['/garden/index']],
+                                                      ['label' => 'Цена оплаты объекта', 'url' => ['/house-price/index']],
+                                                      ['label' => 'Настроить "О нас"', 'url' => ['/site/about']],
+                                                      ['label' => 'Настроить "Контакты"', 'url' => ['/site/contact']],],
+
             ],
                      ];
         $menuItems[] = '<li>'
@@ -75,14 +77,6 @@ AppAsset::register($this);
         <?= $content ?>
     </div>
 </div>
-
-<footer class="footer">
-    <div class="container">
-        <p class="pull-left">&copy; <?= Yii::$app->name.' '.date('Y') ?></p>
-
-        <p class="pull-right"><?= Yii::powered() ?></p>
-    </div>
-</footer>
 
 <?php $this->endBody() ?>
 </body>
