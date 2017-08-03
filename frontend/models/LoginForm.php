@@ -10,7 +10,7 @@ use common\models\Customer;
  */
 class LoginForm extends Model
 {
-    public $customer_name;
+    public $email;
     public $password;
     public $rememberMe = true;
 
@@ -24,7 +24,7 @@ class LoginForm extends Model
     {
         return [
             // customername and password are both required
-            [['customer_name', 'password'], 'required'],
+            [['email', 'password'], 'required'],
             // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
@@ -75,10 +75,11 @@ class LoginForm extends Model
      *
      * @return Customer|null
      */
+
     protected function getCustomer()
     {
         if ($this->_customer === null) {
-            $this->_customer = Customer::findByCustomerName($this->customer_name);
+            $this->_customer = Customer::findByEmail($this->email);
         }
 
         return $this->_customer;
@@ -87,7 +88,7 @@ class LoginForm extends Model
     public function attributeLabels()
     {
         return [
-            'customer_name' => 'Имя пользователя',
+            'email' => 'Email',
             'password' => 'Пароль',
             'rememberMe' => 'Запомнить меня',
         ];

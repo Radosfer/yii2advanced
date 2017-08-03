@@ -100,6 +100,11 @@ class Customer extends ActiveRecord implements IdentityInterface
         return static::findOne(['customer_name' => $customer_name]);
     }
 
+    public static function findByEmail($email)
+    {
+        return static::findOne(['email' => $email]);
+    }
+
     /**
      * Validates password
      *
