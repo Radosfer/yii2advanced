@@ -56,7 +56,7 @@ $this->title = Yii::$app->name;
         <p class="lead">Добро пожаловать.</p>
 
         <?php if ($customer->garden->status) {?>
-        <p><a class="btn btn-lg btn-success" href="http://vitalik/site/el">Управление организацией <?= $customer->garden->garden_name ?></a></p>
+        <p><a class="btn btn-lg btn-success" href="/site/el">Управление организацией <?= $customer->garden->garden_name ?></a></p>
         <?php } ?>
     </div>
 

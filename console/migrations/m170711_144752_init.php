@@ -326,7 +326,7 @@ INSERT INTO `price` (`id`, `created_at`, `value`, `garden_id`) VALUES
 	(80, 'Thu Jul 06 2017 18:41:04 GMT+0300 (Финляндия (лето))', 1, 1);
 
 CREATE TABLE IF NOT EXISTS `streets` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `garden_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
