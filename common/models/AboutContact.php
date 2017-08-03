@@ -39,7 +39,7 @@ class AboutContact extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'about' => 'О нас',
+            'about' => 'Описание',
             'contact' => 'Контакты',
         ];
     }

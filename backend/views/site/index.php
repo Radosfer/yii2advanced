@@ -60,19 +60,19 @@ $this->title = Yii::$app->name;
                 <p><a class="btn btn-success" href="/garden/index">Управление организациями &raquo;</a></p>
             </div>
             <div class="col-lg-4">
-                <h2>Настройка текста страниц "О нас" и "Контакты"</h2>
+                <h2>Настройка текста страниц "Описание" и "Контакты"</h2>
 
                 <p>Возможны следующие операции:</p>
                 <ul>
                     <li>
-                        <p> Настройка текста страницы "О нас"</p>
+                        <p> Настройка текста страницы "Описание"</p>
                     </li>
                     <li>
                         <p> Настройка текста страницы "Контакты"</p>
                     </li>
                 </ul>
 
-                <p><a class="btn btn-success" href="/site/about">Настроить "О нас" &raquo;</a></p>
+                <p><a class="btn btn-success" href="/site/about">Настроить "Описание" &raquo;</a></p>
                 <p><a class="btn btn-success" href="/site/contact">Настроить "Контакты" &raquo;</a></p>
             </div>
         </div>

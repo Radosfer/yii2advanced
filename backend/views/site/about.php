@@ -6,13 +6,13 @@ use yii\helpers\Html;
 use dosamigos\ckeditor\CKEditor;
 use yii\bootstrap\ActiveForm;
 
-$this->title = 'О нас';
+$this->title = 'Описание';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-about">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Измените текст формы "О нас"</p>
+    <p>Измените текст формы "Описание"</p>
 
     <div class="row">
         <div>

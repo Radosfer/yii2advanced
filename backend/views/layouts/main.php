@@ -43,7 +43,7 @@ AppAsset::register($this);
             ['label' => 'Редактирование', 'items' => [['label' => 'Пользователи', 'url' => ['/customer/index']],
                                                       ['label' => 'Организации', 'url' => ['/garden/index']],
                                                       ['label' => 'Цена оплаты объекта', 'url' => ['/house-price/index']],
-                                                      ['label' => 'Настроить "О нас"', 'url' => ['/site/about']],
+                                                      ['label' => 'Настроить "Описание"', 'url' => ['/site/about']],
                                                       ['label' => 'Настроить "Контакты"', 'url' => ['/site/contact']],],
 
             ],
