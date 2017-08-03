@@ -20,8 +20,8 @@
 <script src=https://code.jquery.com/jquery-3.2.1.min.js></script>
 <script src=https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js></script>
 <script src=/static/sweetalert/dist/sweetalert-dev.js></script>
-<script type=text/javascript src=/static/js/manifest.5f33a66eef221988e5af.js></script>
-<script type=text/javascript src=/static/js/vendor.af57a394cfa75dcc8fc4.js></script>
+<script type=text/javascript src=/static/js/manifest.2084d3255e1e9b22e04c.js></script>
+<script type=text/javascript src=/static/js/vendor.f1eaf850adb53035032d.js></script>
 <script type=text/javascript src=/static/js/app.63a295c0dece1a0b16b0.js></script>
 
 </body>
