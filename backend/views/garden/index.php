@@ -83,10 +83,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'yii\grid\ActionColumn',
-            //    'header'=>'Действия',
+                'header'=>'Действия',
              //   'headerOptions' => ['width' => '80'],
-                'template' => '{update} {delete}',
+                'template' => '{update} {delete} {view}',
     'buttons' =>[
+    'view' => function ($url,$model)
+    {
+        return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['clear', 'id' => $model->id],
+            [
+                'class' => 'delete-link',
+                'title' => 'Очистить данные организации',
+                'data' => [
+                    'confirm' => ' ВНИМАНИЕ !!! Будут удалены все данные (пользователи, история, дома, улицы и т.д.) организации',
+                    'method' => 'post',
+                ],
+            ]);
+    },
     'delete' => function ($url,$model)
     {
 

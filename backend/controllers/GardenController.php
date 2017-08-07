@@ -2,6 +2,8 @@
 
 namespace backend\controllers;
 
+use common\models\CustomerAmmountHistory;
+use common\models\House;
 use Yii;
 use common\models\Garden;
 use common\models\Customer;
@@ -126,6 +128,27 @@ class GardenController extends Controller
         $garden->save();
         Customer::updateAll(['status' => Customer::STATUS_ACTIVE], ['like', 'garden_id', $id]);
         // $this->findModel($id)->delete();
+        return $this->redirect(['index']);
+    }
+
+    public function actionClear($id)
+    {
+        //Удаляем все что есть с этой организацией
+        Customer::deleteAll(['garden_id' => $id]);
+        CustomerAmmountHistory::deleteAll(['garden_id' => $id]);
+        HousePrice::deleteAll(['garden_id' => $id]);
+        House::deleteAll(['garden_id' => $id]);
+        //т.к. следующие базы в frontend чтобы им не менять с app/models на fronend/models сделал sql запросами
+        Yii::$app->db->createCommand()->delete('streets', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('price', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('pay', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('indication', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('history', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('group_testimony', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('group_counter', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('group', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('deposit', 'garden_id = :id')->bindValue(':id', $id)->execute();
+        Yii::$app->db->createCommand()->delete('counter', 'garden_id = :id')->bindValue(':id', $id)->execute();
         return $this->redirect(['index']);
     }
 
