@@ -16,7 +16,8 @@ use common\models\Customer;
 //Если ошибки при записи истории
 if ($model->getErrors())
 {
-    echo Html::tag('h1', Html::encode('ОШИБКА ПРИ ЗАПИСИ '), ['class' => '\'btn-lg btn-block btn-danger']);
+    echo HTML::errorSummary($model);
+/*    echo Html::tag('h1', Html::encode('ОШИБКА ПРИ ЗАПИСИ '), ['class' => '\'btn-lg btn-block btn-danger']);
     echo Html::tag('h1', Html::encode('Таблица базы данных - '.Customer::tableName().' '), ['class' => '\'btn-lg btn-block btn-danger']);
 
     echo Html::beginTag("ul");
@@ -29,6 +30,7 @@ if ($model->getErrors())
         }
     }
     echo Html::endTag("ul");
+*/
 }
 ?>
 

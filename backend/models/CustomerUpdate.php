@@ -34,14 +34,14 @@ class CustomerUpdate extends Model
         return [
             ['customer_name', 'trim',],
             ['customer_name', 'required'],
-          //  ['customer_name', 'unique', 'targetClass' => '\common\models\Customer', 'message' => 'This customer_name has already been taken.'],
+            ['customer_name', 'unique', 'targetClass' => '\common\models\Customer', 'message' => 'Это имя пользователя уже занято.', 'on' => [self::SCENARIO_CREATE]],
             ['customer_name', 'string', 'min' => 2, 'max' => 255],
 
             ['email', 'trim'],
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-        //    ['email', 'unique', 'targetClass' => '\common\models\Customer', 'message' => 'This email address has already been taken.'],
+            ['email', 'unique', 'targetClass' => '\common\models\Customer', 'message' => 'Эта почта уже занята.', 'on' => [self::SCENARIO_CREATE]],
 
             ['password', 'required', 'on' => [self::SCENARIO_CREATE]],
             ['password', 'string', 'min' => 6, 'on' => [self::SCENARIO_CREATE]],
